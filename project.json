@@ -1,0 +1,17 @@
+{
+  "library": "lib",
+  "name": "template",
+  "source": "src",
+  "distribute": {
+    "constants": {
+      "VERSION": "0.0.1",
+      "NAME": "Your Project Name",
+      "AUTHOR": "Your Nickname",
+      "MOONLY_BUNDLED": true,
+      "MOONLY_BUNDLE_TIMESTAMP": "<$date>"
+    },
+    "exclude": [],
+    "include": [],
+    "output": "dist"
+  }
+}

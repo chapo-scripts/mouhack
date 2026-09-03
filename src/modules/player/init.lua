@@ -1,0 +1,6 @@
+local Player = ModuleCore.Category:new("Персонаж")
+Player:AddPage(require("modules.player.movement"))
+Player:AddPage(require("modules.player.weapon"))
+-- require("modules.player.movement")(Player)
+-- require("modules.player.health")(Player)
+-- require("modules.player.weapons")(Player)

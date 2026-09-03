@@ -9,3 +9,8 @@ User Interface
 ## Building
 1. Install **[moonly-cli](https://github.com/themusaigen/moonly-command-tool)**
 2. Run `moonly.exe bundle`
+
+## Development
+### Create new module
+### Menu
+### Events (script/SAMP.lua)

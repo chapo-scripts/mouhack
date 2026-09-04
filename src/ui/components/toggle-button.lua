@@ -29,7 +29,7 @@ return function(label, v, size)
     local activePointPosMax = p + size - imgui.ImVec2(activePointSize.x + 1, 1)
     local activePointPos = imgui.ImVec2(activePointPosMin.x + (activePointPosMax.x - activePointPosMin.x) * anim[label].progress, activePointPosMin.y)
     drawList:AddRectFilled(activePointPos, activePointPos + activePointSize, UI.Colors.Color.First.u32, 7)
-    drawList:AddRectFilled(activePointPos, activePointPos + activePointSize, UI.Colors.withAlpha(UI.Colors.Color.Text.u32, anim[label].progress), 7)
+    drawList:AddRectFilled(activePointPos, activePointPos + activePointSize, UI.Colors.withAlpha(UI.Colors.Color.Text.u32, anim[label].progress), 10)
 
     if (imgui.InvisibleButton("button=" .. label, size)) then
         v[0] = not v[0]

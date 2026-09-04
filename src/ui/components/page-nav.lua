@@ -54,5 +54,5 @@ return function(pages, oneItemWidth)
     imgui.EndChild()
     imgui.PopStyleVar()
     imgui.PopFont()
-    return newSelected
+    return newSelected, PAGE_NAV_ANIM.current
 end

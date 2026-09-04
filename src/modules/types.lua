@@ -4,11 +4,16 @@
 PageItemType = {
     Toggle = "toggle",
     Button = "button",
-    NoAction = "no_action"
+    Text = "text",
+    NoAction = "no_action",
+    Selector = "selector",
+    Combo = "combo",
+    Frame = "frame"
 }
 
 ---@class PageItem.Properties
 ---@field type? PageItemType
+---@field description? string
 ---@field label string
 ---@field onChange? fun()
 ---@field options? PageItem[]
@@ -29,13 +34,16 @@ PageItemType = {
 ---@class PageItem.Combo : PageItem.Properties
 ---@field items string[]
 
----@alias PageItem PageItem.Toggle | PageItem.Button | PageItem.Text | PageItem.NoAction
+---@class PageItem.Selector : PageItem.Combo
+
+---@class PageItem.Frame : PageItem.Properties
+---@field func fun()
+
+---@alias PageItem PageItem.Toggle | PageItem.Button | PageItem.Text | PageItem.NoAction | PageItem.Selector | PageItem.Combo | PageItem.Frame
 
 
 
----@class Category
----@field name string
----@field pages Page[]
+
 
 -- -@meta
 

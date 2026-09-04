@@ -24,16 +24,15 @@ function main()
     sampRegisterChatCommand("template", function()
         MainWindowState[0] = not MainWindowState[0]
     end)
-    print("CAts")
-    print(table.toString(ModuleCore.categories))
-    for k, v in ipairs(ModuleCore.categories) do
-        print(k, v)
-        for k2, v2 in ipairs(v.pages) do
-            print('--', k2, v2)
-        end
-    end
     while (true) do
         wait(0)
         -- ModuleCore:CallEach("onLoop")
+
+        -- WIP
+        for k, v in ipairs(ModuleCore.categories) do
+            for _, p in ipairs(v.pages) do
+                p:Call("loop")
+            end
+        end
     end
 end

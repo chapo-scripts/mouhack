@@ -1,10 +1,3 @@
----@enum ItemType
-ItemType = {
-    Toggle = "toggle",
-    Button = "button",
-    Text = "text"
-}
-
 require("modules.types")
 ModuleCore = {
     Category = require("modules.core.category"),

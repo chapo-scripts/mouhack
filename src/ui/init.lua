@@ -14,7 +14,11 @@ UI = {
         Nav = require("ui.components.nav"),
         PageNav = require("ui.components.page-nav"),
         Selector = require("ui.components.selector"),
-        RoundedGradientRect = require("ui.components.rounded-gradient-rect")
+        Hint = require("ui.components.hint"),
+        RoundButton = require("ui.components.round-button"),
+        Button = require("ui.components.button"),
+        RoundedGradientRect = require("ui.components.rounded-gradient-rect"),
+        Search = require("ui.components.search")
     },
     Windows = {
         Main = require("ui.windows.main")
@@ -27,6 +31,11 @@ UI = {
         Init = require("ui.fonts"),
         requiredSizes = { 12, 15, 16, 20, 24, 40, 64 },
         requiredIcons = {
+            "BOOK",
+            "CODE_COMMIT",
+            "CODE_BRANCH",
+            "CODE_FORK",
+            "CIRCLE_QUESTION",
             "PLUS",
             "HEART",
             "VEST",
@@ -51,7 +60,9 @@ UI = {
             "CLOCK",
 
             "PERSON",
-
+            "XMARK",
+            "COG",
+            "GEAR",
             "CIRCLE",
             "PERSON_WALKING",
             "SIGNAL",
@@ -70,4 +81,17 @@ imgui.OnInitialize(function()
     ---@cast style imgui.Style
     UI.Style(style, style.Colors)
     UI.Colors:Init()
+end)
+
+addEventHandler("onWindowMessage", function(msg, key)
+    if (msg == 0x0100) then
+        if (key == VK_ESCAPE and MainWindowState[0]) then
+            if (UI.Components.Search:IsEnabled()) then
+                UI.Components.Search:Show(false)
+            else
+                MainWindowState[0] = false
+            end
+            consumeWindowMessage(true, true)
+        end
+    end
 end)

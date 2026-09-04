@@ -1,0 +1,19 @@
+{
+    "name": "Chat Funcs",
+    "author": "chapo",
+    "url": "https://t.me/moujeek",
+    "version": "1.0.0",
+    "changelog": [
+        {
+            "version": "1.0.0",
+            "release_date": "10.10.2010",
+            "changes": [
+                "Release!"
+            ]
+        }
+    ],
+    "files": [
+        "test-module\\init.lua",
+        "test-module\\main.lua"
+    ]
+}

@@ -19,6 +19,7 @@ UI = {
         Button = require("ui.components.button"),
         RoundedGradientRect = require("ui.components.rounded-gradient-rect"),
         Search = require("ui.components.search"),
+        Settings = require("ui.components.settings"),
         ImRotate = require("ui.components.imrotate"),
         TextWithSearch = require("ui.components.text-with-search")
     },
@@ -80,6 +81,7 @@ UI = {
         }
     },
     selected = { category = 1, page = 1 },
+    pageNavigation = {},
     IniFilename = nil,
     Blink = {
         state = 0,
@@ -121,6 +123,8 @@ addEventHandler("onWindowMessage", function(msg, key)
         if (key == VK_ESCAPE and MainWindowState[0]) then
             if (UI.Components.Search:IsEnabled()) then
                 UI.Components.Search:Show(false)
+            elseif (UI.Components.Settings:IsEnabled()) then
+                UI.Components.Settings:Show(false)
             else
                 MainWindowState[0] = false
             end

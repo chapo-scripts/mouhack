@@ -10,7 +10,7 @@ script_author(DEVELOPMENT and AUTHOR or "DEV") ---@diagnostic disable-line
 require("libchecker")
 ffi = require("ffi")
 Const = require("constants")
-require("modules")
+require("core")
 Encoding = require("encoding")
 CarbJsonConfig = require("carbJsonConfig")
 imgui = require("mimgui")

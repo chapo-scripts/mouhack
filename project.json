@@ -1,12 +1,12 @@
 {
+  "name": "mouhack",
   "library": "lib",
-  "name": "template",
   "source": "src",
   "distribute": {
     "constants": {
-      "VERSION": "0.0.1",
-      "NAME": "Your Project Name",
-      "AUTHOR": "Your Nickname",
+      "VERSION": "1.0.0",
+      "NAME": "MouHack",
+      "AUTHOR": "chapo",
       "MOONLY_BUNDLED": true,
       "MOONLY_BUNDLE_TIMESTAMP": "<$date>"
     },

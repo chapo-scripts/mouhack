@@ -18,19 +18,26 @@ UI = {
         RoundButton = require("ui.components.round-button"),
         Button = require("ui.components.button"),
         RoundedGradientRect = require("ui.components.rounded-gradient-rect"),
-        Search = require("ui.components.search")
+        Search = require("ui.components.search"),
+        ImRotate = require("ui.components.imrotate"),
+        TextWithSearch = require("ui.components.text-with-search")
     },
     Windows = {
         Main = require("ui.windows.main")
     },
     Resource = {
         Fonts = require("ui.resource.fonts"),
+        Logo = require("ui.resource.logo")
+    },
+    Texture = {
+        logo = nil
     },
     ---@type table<number, {Regular: unknown, Bold: unknown, Black: unknown}>
     Font = {
         Init = require("ui.fonts"),
         requiredSizes = { 12, 15, 16, 20, 24, 40, 64 },
         requiredIcons = {
+            "MAGNIFYING_GLASS",
             "BOOK",
             "CODE_COMMIT",
             "CODE_BRANCH",
@@ -67,12 +74,36 @@ UI = {
             "PERSON_WALKING",
             "SIGNAL",
             "IMAGE",
-            "IMAGES"
+            "IMAGES",
+            "CIRCLE_EXCLAMATION"
         }
     },
     selected = { category = 1, page = 1 },
-    IniFilename = nil
+    IniFilename = nil,
+    Blink = {
+        state = 0,
+        alpha = 0,
+        updatedAt = os.clock(),
+        duration = 0.5
+    }
 }
+
+---@overload fun(self, color: number): number
+---@overload fun(self, color: ImVec4): ImVec4
+function UI.Blink:GetColor(color)
+    return UI.Colors.withAlpha(color, self.alpha)
+end
+
+function UI.Blink:Update()
+    self.alpha = Utils.bringFloatTo(self.alpha, self.state == 1 and 1 or 0, self.updatedAt, self.duration)
+    if (self.alpha == 1) then
+        self.updatedAt = os.clock()
+        self.state = 0
+    elseif (self.alpha == 0) then
+        self.updatedAt = os.clock()
+        self.state = 1
+    end
+end
 
 imgui.OnInitialize(function()
     imgui.GetIO().IniFilename = UI.IniFilename
@@ -81,6 +112,7 @@ imgui.OnInitialize(function()
     ---@cast style imgui.Style
     UI.Style(style, style.Colors)
     UI.Colors:Init()
+    UI.Texture.logo = imgui.CreateTextureFromFileInMemory(imgui.new('const char*', UI.Resource.Logo), #UI.Resource.Logo);
 end)
 
 addEventHandler("onWindowMessage", function(msg, key)

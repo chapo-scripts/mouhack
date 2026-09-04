@@ -17,6 +17,7 @@ PageItemType = {
 ---@field label string
 ---@field onChange? fun()
 ---@field options? PageItem[]
+---@field unsafe? string|boolean
 
 ---@class PageItem.NoAction : PageItem.Properties
 

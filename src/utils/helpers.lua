@@ -28,3 +28,10 @@ function Utils.bringVec4To(from, to, start_time, duration)
     end
     return (timer > duration) and to or from, false
 end
+
+function string.toLower(str)
+    local result = string.gsub(str, "([A-ZА-ЯЁ])", function(c)
+        return string.char(string.byte(c) + (c == "ё" and 16 or 32))
+    end)
+    return result
+end

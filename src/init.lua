@@ -9,6 +9,7 @@ script_author(DEVELOPMENT and AUTHOR or "DEV") ---@diagnostic disable-line
 
 require("libchecker")
 ffi = require("ffi")
+require("constants")
 require("modules")
 Encoding = require("encoding")
 CarbJsonConfig = require("carbJsonConfig")
@@ -26,6 +27,7 @@ function main()
     end)
     while (true) do
         wait(0)
+        UI.Blink:Update()
         -- ModuleCore:CallEach("onLoop")
 
         -- WIP

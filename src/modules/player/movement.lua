@@ -52,6 +52,7 @@ Page:AddItem(PageItemType.Toggle, {
 Page:AddItem(PageItemType.Toggle, {
     value = Page.config.airbrake.enabled,
     label = "AirBrake",
+    unsafe = true,
     options = {
         Page:AddItem(PageItemType.NoAction, { label = "Скорость" }, true),
         Page:AddItem(PageItemType.Toggle, { label = "Изменять скорость колесиком мыши", value = Page.config.airbrake.mouseWheelSpeedControl }, true)

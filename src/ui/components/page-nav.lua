@@ -31,8 +31,8 @@ return function(pages, oneItemWidth)
     local childPos = imgui.GetCursorScreenPos()
     local dl = imgui.GetWindowDrawList()
     local currentPos = outerPadding + imgui.ImVec2(childPos.x, childPos.y) + imgui.ImVec2((PAGE_NAV_ANIM.current - 1) * itemSize.x, 0)
-    dl:AddRectFilled(childPos, childPos + totalSize, UI.Colors.Color.Stroke.u32, 100)
-    dl:AddRectFilled(currentPos, currentPos + itemSize, UI.Colors.Color.First.u32, 100)
+    dl:AddRectFilled(childPos, childPos + totalSize, UI.Colors.Color.First.u32, 100)
+    dl:AddRectFilled(currentPos, currentPos + itemSize, UI.Colors.Color.Stroke.u32, 100)
     
     
     if (imgui.BeginChild("page-nav", totalSize, true, imgui.WindowFlags.NoBackground)) then
@@ -47,6 +47,9 @@ return function(pages, oneItemWidth)
                 PAGE_NAV_ANIM.to = index
                 PAGE_NAV_ANIM.start = os.clock()
                 newSelected = index
+            end
+            if (imgui.IsItemHovered()) then
+                imgui.SetMouseCursor(imgui.MouseCursor.Hand)
             end
             imgui.SameLine(nil, gap)
         end

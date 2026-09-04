@@ -1,6 +1,15 @@
+---@alias SearchResultType "category"|"page"|"item"|"option"
+
 ---@class SearchResult
----@field type "category"|"page"|"item"|"item_option"
----@field path string
+---@field type SearchResultType
+---@field path string[]
+---@field pathString string
+---@field pathLower string
+---@field categoryIndex number
+---@field pageIndex? number
+---@field itemIndex? number
+---@field optinIndex? number
+---@field positions? number[]
 
 local Search = {
     anim = {
@@ -12,36 +21,82 @@ local Search = {
         hover = {}
     },
     buffer = imgui.new.char[128](""),
+    query = "",
     ---@type SearchResult[]
-    searchResults = {}
+    searchResults = {},
+    ---@type SearchResult[]
+    possibleResults = {}
 }
 
-function Search:Find()
-    self.searchResults = {}
-    local query = string.lower(ffi.string(self.buffer))
+local searchResultType = {
+    category = { label = "Категория", icon = faicons("BOOK") },
+    page = { label = "Страница", icon = faicons("CODE_FORK") },
+    item = { label = "Функция", icon = faicons("CODE_COMMIT") },
+    option = { label = "Параметр", icon = faicons("CODE_BRANCH") },
+}
+
+function Search:Init()
+    ---@param type SearchResultType
+    ---@param index number[]
+    ---@param path string[]
+    local function pushItem(type, index, path)
+        local item = {
+            type = type,
+            categoryIndex = index[1] or nil,
+            pageIndex = index[2] or nil,
+            itemIndex = index[3] or nil,
+            optionIndex = index[4] or nil,
+            path = path,
+            pathString = table.concat(path, " > "),
+        }
+        item.pathLower = u8(string.toLower(u8:decode(item.pathString)))
+        table.insert(self.possibleResults, item)
+    end
+
+    self.possibleResults = {}
     for categoryIndex, category in ipairs(ModuleCore.categories) do
-        if (category.name:find(query)) then
-            table.insert(self.searchResults, { type = "category", path = category.name })
-        end
+        ---@cast category Category
+        pushItem("category", { categoryIndex }, { category.name })
         for pageIndex, page in ipairs(category.pages) do
-            if (page.name:find(query)) then
-                table.insert(self.searchResults, { type = "page", path = category.name .. "->" .. page.name })
-            end
+            pushItem("page", { categoryIndex, pageIndex }, { category.name, page.name })
             for itemIndex, item in ipairs(page.items) do
-                if (item.label:find(query)) then
-                    table.insert(self.searchResults, { type = "item", path = category.name .. "->" .. page.name .. "->" .. item.label })
-                end
+                pushItem("item", { categoryIndex, pageIndex, itemIndex }, { category.name, page.name, item.label })
                 if (item.options) then
                     for optionIndex, option in ipairs(item.options) do
-                        if (item.label:find(query)) then
-                            table.insert(self.searchResults, { type = "option", path = category.name .. "->" .. page.name .. "->" .. item.label .. "->" .. option.label })
-                        end
+                        pushItem("option", { categoryIndex, pageIndex, itemIndex, optionIndex }, { category.name, page.name, item.label, option.label })
                     end
                 end
             end
         end
     end
-    print("FOUND:", #self.searchResults)
+end
+
+function Search:Find()
+    if (#self.possibleResults) then
+        self:Init()
+    end
+
+    self.searchResults = {}
+    local query = u8(string.toLower(u8:decode(ffi.string(self.buffer))))
+    for _, r in ipairs(self.possibleResults) do
+
+        local pathLower = u8(string.toLower(u8:decode(r.pathString)))
+        local hasFound = pathLower:find(query)
+        print(hasFound, u8:decode(query), u8:decode(pathLower))
+        if (hasFound) then
+            local positions, searchIndex = {}, 1;
+            while true do
+                local s, e = string.find(pathLower, query, searchIndex, nil);
+                if (not s) then
+                    break;
+                end
+                table.insert(positions, {s, e});
+                searchIndex = s + 1;
+            end
+            r.positions = positions
+            table.insert(self.searchResults, r)
+        end
+    end
 end
 
 function Search:Show(enabled)
@@ -63,14 +118,6 @@ local function drawSearchInput(width)
     imgui.SetKeyboardFocusHere()
     imgui.PopStyleVar(2)
 end
-
-
-local searchResultType = {
-    category = { label = "Категория", icon = faicons("BOOK") },
-    page = { label = "Страница", icon = faicons("CODE_FORK") },
-    item = { label = "Функция", icon = faicons("CODE_COMMIT") },
-    option = { label = "Параметр", icon = faicons("CODE_BRANCH") },
-}
 
 ---@param windowPos ImVec2
 ---@param windowSize ImVec2
@@ -110,15 +157,22 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
                     end
                     local rPos = imgui.GetCursorScreenPos()
                     cDrawList:AddRectFilled(rPos, rPos + oneResultSize, UI.Colors.withAlpha(UI.Colors.Color.Second.u32, Search.anim.progress), 15)
-                    cDrawList:AddRect(rPos, rPos + oneResultSize, UI.Colors.withAlpha(UI.Colors.Color.Text.u32, self.resultsAnim.hover[k].progress), 15)
+                    cDrawList:AddRectFilled(rPos, rPos + oneResultSize, UI.Colors.withAlpha(UI.Colors.Color.Stroke.u32, self.resultsAnim.hover[k].progress), 15)
+                    -- cDrawList:AddRect(rPos + imgui.ImVec2(1, 1), rPos + oneResultSize - imgui.ImVec2(1, 1), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, self.resultsAnim.hover[k].progress), 15)
                     cDrawList:AddText(rPos + imgui.ImVec2(10, 10), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, Search.anim.progress - 0.5), searchResultType[v.type].icon .. " " .. searchResultType[v.type].label)
-                    cDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, rPos + imgui.ImVec2(10, 10 + 15 + 5), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, Search.anim.progress), v.path)
+                    
+                    
+                    imgui.PushFont(UI.Font[20].Bold)
+                    -- TODO: Add search hightlight
+                    cDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, rPos + imgui.ImVec2(10, 10 + 15 + 5), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, Search.anim.progress), v.pathString)
+                    imgui.PopFont()
+                    -- UI.Components.TextWithSearch(cDrawList, v.pathString)
                     
                     local arrowIcon = faicons("CARET_RIGHT")
                     local arrowIconSize = imgui.CalcTextSize(arrowIcon)
                     cDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, rPos + imgui.ImVec2(oneResultSize.x - arrowIconSize.x - 15, oneResultSize.y / 2 - arrowIconSize.y / 2), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, self.resultsAnim.hover[k].progress), arrowIcon)
 
-                    imgui.InvisibleButton("SR:" .. v.path, oneResultSize)
+                    imgui.InvisibleButton("SR:" .. v.pathString, oneResultSize)
                     local isHovered = imgui.IsItemHovered()
                     self.resultsAnim.hover[k].progress = Utils.bringFloatTo(self.resultsAnim.hover[k].progress, self.resultsAnim.hover[k].hovered and 1 or 0, self.resultsAnim.hover[k].updatedAt, 1)
                     if (self.resultsAnim.hover[k].hovered ~= isHovered) then
@@ -132,24 +186,6 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
             imgui.EndChild()
             UI.Components.CenterText("Нажмите ESC для выхода",UI.Colors.withAlpha(UI.Colors.Color.Text.vec4, self.anim.progress - 0.5) )
             imgui.PopFont()
-            -- local oneResultHeight = 10 + 10 + 15 + 15 + 10
-            -- imgui.SetCursorPos(imgui.ImVec2(windowSize.x / 2 - width / 2, 50))
-            -- local containerPos, containerSize = imgui.GetCursorScreenPos(), imgui.ImVec2(width, imgui.GetFontSize() + imgui.GetStyle().FramePadding.y * 2)
-            -- dl:AddRectFilled(containerPos - imgui.ImVec2(15, 15), containerPos + containerSize + imgui.ImVec2(15, 15), UI.Colors.withAlpha(UI.Colors.Color.First.u32, Search.anim.progress), 15)
-
-            -- if (imgui.BeginChild("search-container", containerSize, true)) then
-            --     imgui.PushFont(UI.Font[20].Bold)
-            --     drawSearchInput(width)
-
-            --     local hintText = #self.searchResults == 0 and "Ничего не найдено :(" or "Результаты поиска:"
-            --     imgui.Spacing()
-            --     imgui.SetCursorPosX(containerSize.x / 2 - imgui.CalcTextSize(hintText).x / 2)
-            --     imgui.TextDisabled(hintText)
-            --     imgui.PopFont()
-            --     local p = imgui.GetCursorScreenPos()
-            --     drawSearchResults(dl, p, imgui.ImVec2(width, imgui.GetWindowWidth() - imgui.GetCursorPosY() - 15))
-            -- end
-            -- imgui.EndChild()
         end
         imgui.EndChild()
         imgui.PopStyleVar()

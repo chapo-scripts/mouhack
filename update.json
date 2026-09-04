@@ -1,0 +1,25 @@
+{
+    "version": "1.0.0",
+    "changelog": [
+        {
+            "version": "1.0.0",
+            "release_date": "N/A",
+            "changes": [
+                "Release"
+            ]
+        }
+    ],
+    "url": "",
+    "thanks": [
+        "@Musaigen: инструменты разработки \"moonly\" и \"moonly-cli\"",
+        "@Cosmo: компоненты ImGui, некоторые функции для базовых модулей",
+        "@XRLM: компоненты ImGui",
+        "@AnWu: компоненты ImGui"
+    ],
+    "links": [
+        {"label": "", "url": "https://t.me/moujeek"},
+        {"label": "", "url": "https://t.me/chaposcripts"},
+        {"label": "", "url": "https://t.me/DmitryFromMoscow"},
+        {"label": "", "url": "https://youtube.com/@ya_chapo"}
+    ]
+}

@@ -43,6 +43,7 @@ function Settings:Draw(windowPos, windowSize, bgDrawList)
             { name = "Модули" },
             { name = "Бинды" },
             { name = "Скрипт" },
+            { name = "Авторы" }
         }, 150)
         imgui.PopFont()
 

@@ -5,7 +5,6 @@
 ---@field config table<string, unknown>
 ---@field handlers table<string, function>
 
----@class Page
 local Page = {}
 
 setmetatable(Page, {__call = function(t, ...)
@@ -51,4 +50,5 @@ function Page:Call(event, ...)
     end
 end
 
+---@cast Page Page
 return Page

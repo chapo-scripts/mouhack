@@ -65,7 +65,7 @@ return function(str_id, hint_text, color, no_center)
 
         local hint_width = max_width(hint_text) + (imgui.GetStyle().WindowPadding.x * 2)
         imgui.SetNextWindowSize(imgui.ImVec2(hint_width, -1), imgui.Cond.Always)
-        imgui.Begin('##' .. str_id, _, imgui.WindowFlags.Tooltip + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoTitleBar)
+        imgui.Begin('##' .. str_id, nil, imgui.WindowFlags.Tooltip + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoTitleBar)
             for line in hint_text:gmatch('[^\n]+') do
                 if no_center then
                     imgui.Text(line)

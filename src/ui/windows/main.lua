@@ -1,10 +1,5 @@
+---@global
 MainWindowState = imgui.new.bool(true)
-
-local pageAnim = {
-    current = 1,
-    to = 1,
-    updatedAt = 0
-}
 
 local searchAnim = {
     hovered = false,
@@ -111,10 +106,7 @@ imgui.OnFrame(
                 local currentCategory = ModuleCore.categories[UI.selected.category]
                 if (currentCategory) then
                     if (#currentCategory.pages > 1) then
-                        local newPage = UI.Components.PageNav("category:" .. UI.selected.category, UI.pageNavigation[UI.selected.category], currentCategory.pages, 150)
-                        if (newPage) then
-                            UI.selected.page = newPage
-                        end
+                        UI.Components.PageNav("category:" .. UI.selected.category, UI.pageNavigation[UI.selected.category], currentCategory.pages, 150)
                     end
                     
                     local pageSize = imgui.GetWindowSize() - imgui.ImVec2(15 + 15, imgui.GetCursorPosY())
@@ -122,11 +114,11 @@ imgui.OnFrame(
                     local pageDrawList = imgui.GetWindowDrawList()
                     for pageIndex, page in ipairs(currentCategory.pages) do
                         local pagePos = imgui.GetCursorScreenPos()
-                        pageDrawList:PushClipRect(pagePos, pagePos + pageSize)
-                        bgDrawList:PushClipRect(pagePos, pagePos + pageSize)
+                        pageDrawList:PushClipRect(pagePos, pagePos + pageSize) ---@diagnostic disable-line
+                        bgDrawList:PushClipRect(pagePos, pagePos + pageSize) ---@diagnostic disable-line
                         UI.Components.Page(pageDrawList, bgDrawList, page, pageSize)
-                        pageDrawList:PopClipRect()
-                        bgDrawList:PopClipRect()
+                        pageDrawList:PopClipRect() ---@diagnostic disable-line
+                        bgDrawList:PopClipRect() ---@diagnostic disable-line
                         imgui.SameLine(nil, 20)
                     end
                 else

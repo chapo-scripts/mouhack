@@ -2,7 +2,6 @@
 ---@field name string
 ---@field pages Page[]
 
----@type Category
 local Category = {}
 
 setmetatable(Category, {__call = function(t, ...)
@@ -29,4 +28,5 @@ function Category:AddPage(page)
     table.insert(self.pages, page)
 end
 
+---@cast Category Category
 return Category

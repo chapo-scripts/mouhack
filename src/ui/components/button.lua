@@ -4,9 +4,9 @@ return function(label, size, duration)
     end
 
     local cols = {
-        default = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.Button]),
-        hovered = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.ButtonHovered]),
-        active  = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.ButtonActive])
+        default = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.Button]),  ---@diagnostic disable-line
+        hovered = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.ButtonHovered]),  ---@diagnostic disable-line
+        active  = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.ButtonActive])  ---@diagnostic disable-line
     }
 
     if UI_ANIMBUT == nil then
@@ -62,9 +62,9 @@ return function(label, size, duration)
 
     ::no_hovered::
 
-    imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(pool["color"]))
-    imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(pool["color"]))
-    imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(pool["color"]))
+    imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(pool["color"]))  ---@diagnostic disable-line
+    imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(pool["color"]))  ---@diagnostic disable-line
+    imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(pool["color"]))  ---@diagnostic disable-line
     local result = imgui.Button(label, size or imgui.ImVec2(0, 0))
     imgui.PopStyleColor(3)
 

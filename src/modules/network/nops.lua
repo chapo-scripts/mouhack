@@ -29,7 +29,6 @@ local function build(query)
 
         local options = {}
         for id, packetData in pairs(sampEventsCore.INTERFACE[packetType]) do
-            print(_, packetData)
             local eventName = packetData[1]
             if (type(eventName) == "string" and eventName:match("^on.+")) then
                 eventName = eventName:sub(3, #eventName)

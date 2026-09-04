@@ -28,8 +28,7 @@ function main()
     while (true) do
         wait(0)
         UI.Blink:Update()
-        -- ModuleCore:CallEach("onLoop")
-
+        
         -- WIP
         for k, v in ipairs(ModuleCore.categories) do
             for _, p in ipairs(v.pages) do

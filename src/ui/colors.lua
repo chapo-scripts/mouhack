@@ -1,3 +1,4 @@
+---@diagnostic disable:undefined-global
 local Colors = {
     Color = {
         First = { vec4 = imgui.ImVec4(0.15, 0.15, 0.15, 1), u32 = -1 },

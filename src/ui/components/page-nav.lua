@@ -1,10 +1,8 @@
 PAGE_NAV_ANIM = {}
 
-local selected = 1
-
 ---@param strId string
 ---@param selected mimgui.int
----@param pages Page[]
+---@param pages {name: string}[]
 ---@param oneItemWidth number
 return function(strId, selected, pages, oneItemWidth)
     if (not PAGE_NAV_ANIM[strId]) then
@@ -45,9 +43,9 @@ return function(strId, selected, pages, oneItemWidth)
             local p = imgui.GetCursorScreenPos()
             local labelSize = imgui.CalcTextSize(page.name)
             dl:AddTextFontPtr(imgui.GetFont(), imgui.GetFontSize(), p + imgui.ImVec2(itemSize.x / 2 - labelSize.x / 2, itemSize.y / 2 - labelSize.y / 2), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, alpha - 0.5), page.name)
-            dl:PushClipRect(currentPos, currentPos + itemSize)
+            dl:PushClipRect(currentPos, currentPos + itemSize) ---@diagnostic disable-line
             dl:AddTextFontPtr(imgui.GetFont(), imgui.GetFontSize(), p + imgui.ImVec2(itemSize.x / 2 - labelSize.x / 2, itemSize.y / 2 - labelSize.y / 2), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, alpha), page.name)
-            dl:PopClipRect()
+            dl:PopClipRect()  ---@diagnostic disable-line
             if (imgui.InvisibleButton(page.name, itemSize)) then
                 PAGE_NAV_ANIM[strId].to = index
                 PAGE_NAV_ANIM[strId].start = os.clock()

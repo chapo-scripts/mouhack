@@ -83,6 +83,7 @@ imgui.OnFrame(
             -- Background
             bgDrawList:AddRectFilled(pos, pos + size, UI.Colors.Color.First.u32, 15)
             bgDrawList:AddRectFilled(pos + imgui.ImVec2(leftWidth, headerHeight), pos + size, UI.Colors.Color.Second.u32, 25, 1 + 8)
+            bgDrawList:AddRect(pos, pos + size, UI.Colors.Color.Stroke.u32, 15, nil, 2)
             header(size, pos, imgui.ImVec2(size.x, headerHeight))
             imgui.PopFont()
 
@@ -93,6 +94,7 @@ imgui.OnFrame(
             -- bgDrawList:AddRectFilled(pos + imgui.ImVec2(15, 15), pos + imgui.ImVec2(15, 15) + imageSize, 0xFFffffff, 5)
             bgDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, pos + imgui.ImVec2(logoOffset.x + imageSize.x + 15, logoOffset.y + 3), UI.Colors.Color.Text.u32, "MouHack")
             bgDrawList:AddTextFontPtr(UI.Font[15].Bold, 15, pos + imgui.ImVec2(logoOffset.x + imageSize.x + 15, logoOffset.y + 3 + 20), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, 0.5), "v1.0.2")
+            imgui.NewLine()
             imgui.NewLine()
             local newCategory = UI.Components.Nav(drawList, pos, imgui.ImVec2(leftWidth, 250), ModuleCore.categories)
             if (newCategory) then
@@ -114,7 +116,9 @@ imgui.OnFrame(
                     
                     local pageSize = imgui.GetWindowSize() - imgui.ImVec2(15 + 15, imgui.GetCursorPosY())
                     -- imgui.SetCursorPos(imgui.ImVec2(15 + (pageIndex - 1) * pageSize.x, 15 + 10 + 10 + 15))
-                    imgui.SetCursorPosX(10 - (PAGE_NAV_ANIM.current - 1) * pageSize.x)
+                    -- imgui.SetCursorPosX(10 - (PAGE_NAV_ANIM.current - 1) * pageSize.x)
+                    imgui.SetCursorPosX(10 - (pageSize.x * (PAGE_NAV_ANIM.current - 1)) - (20 * (PAGE_NAV_ANIM.current - 1)))
+                    -- imgui.ImVec2(15 - (contentSize.x * (navanim.current - 1)) - (30 * (navanim.current - 1))
                     local pageDrawList = imgui.GetWindowDrawList()
                     for pageIndex, page in ipairs(currentCategory.pages) do
                         local pagePos = imgui.GetCursorScreenPos()

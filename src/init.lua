@@ -9,7 +9,7 @@ script_author(DEVELOPMENT and AUTHOR or "DEV") ---@diagnostic disable-line
 
 require("libchecker")
 ffi = require("ffi")
-require("constants")
+Const = require("constants")
 require("modules")
 Encoding = require("encoding")
 CarbJsonConfig = require("carbJsonConfig")
@@ -22,7 +22,7 @@ require("ui")
 
 function main()
     while (not isSampAvailable()) do wait(0) end
-    sampRegisterChatCommand("template", function()
+    sampRegisterChatCommand("mh", function()
         MainWindowState[0] = not MainWindowState[0]
     end)
     while (true) do

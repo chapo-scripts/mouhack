@@ -12,6 +12,9 @@
 ---@field positions? number[]
 
 local Search = {
+    hightlight = {
+
+    },
     anim = {
         enabled = false,
         progress = 0,
@@ -34,6 +37,12 @@ local searchResultType = {
     item = { label = "Функция", icon = faicons("CODE_COMMIT") },
     option = { label = "Параметр", icon = faicons("CODE_BRANCH") },
 }
+
+-- TODO: show item
+---@param item SearchResult
+function Search:HighlightItem(item)
+
+end
 
 function Search:Init()
     ---@param type SearchResultType
@@ -78,6 +87,9 @@ function Search:Find()
 
     self.searchResults = {}
     local query = u8(string.toLower(u8:decode(ffi.string(self.buffer))))
+    if (#query == 0) then
+        return
+    end
     for _, r in ipairs(self.possibleResults) do
 
         local pathLower = u8(string.toLower(u8:decode(r.pathString)))
@@ -111,12 +123,16 @@ end
 local function drawSearchInput(width)
     imgui.PushStyleVarVec2(imgui.StyleVar.FramePadding, imgui.ImVec2(15, 15))
     imgui.PushStyleVarFloat(imgui.StyleVar.FrameRounding, 15)
+    imgui.PushStyleVarFloat(imgui.StyleVar.FrameBorderSize, 2)
+    imgui.PushStyleColor(imgui.Col.FrameBg, UI.Colors.Color.Second.vec4)
+    imgui.PushStyleColor(imgui.Col.Border, UI.Colors.Color.Stroke.vec4)
     imgui.SetNextItemWidth(width)
-    if (imgui.InputTextWithHint("##Search.buffer", "Начните вводить название функции", Search.buffer, ffi.sizeof(Search.buffer))) then
+    if (imgui.InputTextWithHint("##Search.buffer", "Начните вводить название функции или параметра", Search.buffer, ffi.sizeof(Search.buffer))) then
         Search:Find()
     end
     imgui.SetKeyboardFocusHere()
-    imgui.PopStyleVar(2)
+    imgui.PopStyleVar(3)
+    imgui.PopStyleColor(2)
 end
 
 ---@param windowPos ImVec2
@@ -132,25 +148,25 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
             dl:AddRectFilled(windowPos, windowPos + windowSize, UI.Colors.withAlpha(0xFF000000, self.anim.progress - 0.5), 15)
             
             imgui.PushFont(UI.Font[20].Bold)
-            local style = imgui.GetStyle()
             local contentWidth = windowSize.x / 2
             -- local contentHeight = inputSize.y
             
             imgui.SetCursorPos(imgui.ImVec2(windowSize.x / 2 - contentWidth / 2, 50))
-            local posStart = imgui.GetCursorScreenPos()
             drawSearchInput(contentWidth)
 
             local oneResultSize = imgui.ImVec2(contentWidth, 10 + 15 + 5 + 20 + 10)
             imgui.NewLine()
             local containerSize = imgui.ImVec2(contentWidth, imgui.GetWindowHeight() - 175)--oneResultSize.y * #self.searchResults)
             imgui.SetCursorPosX(windowSize.x / 2 - contentWidth / 2)
-            local p1 = imgui.GetCursorScreenPos()
-            -- dl:AddRectFilled(p1, p1 + imgui.ImVec2(containerSize.x, oneResultSize.y * #self.searchResults), 0xFF00ff00)
-            -- dl:AddRectFilledMultiColor(p1)
             if (imgui.BeginChild("search-results-container", containerSize, true, imgui.WindowFlags.NoScrollbar)) then
                 imgui.PushFont(UI.Font[15].Bold)
                 local cDrawList = imgui.GetWindowDrawList()
                 imgui.PushStyleVarVec2(imgui.StyleVar.ItemSpacing, imgui.ImVec2(0, 10))
+                if (#self.searchResults == 0 and #ffi.string(self.buffer) > 0) then
+                    imgui.PushFont(UI.Font[20].Bold)
+                    UI.Components.CenterText("Ничего не найдено :(")
+                    imgui.PopFont()
+                end
                 for k, v in ipairs(Search.searchResults) do
                     if (not self.resultsAnim.hover[k]) then
                         self.resultsAnim.hover[k] = { hovered = false, progress = 0, updatedAt = 0 }
@@ -172,7 +188,7 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
                     local arrowIconSize = imgui.CalcTextSize(arrowIcon)
                     cDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, rPos + imgui.ImVec2(oneResultSize.x - arrowIconSize.x - 15, oneResultSize.y / 2 - arrowIconSize.y / 2), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, self.resultsAnim.hover[k].progress), arrowIcon)
 
-                    imgui.InvisibleButton("SR:" .. v.pathString, oneResultSize)
+                    imgui.InvisibleButton("search-result:" .. v.pathString, oneResultSize)
                     local isHovered = imgui.IsItemHovered()
                     self.resultsAnim.hover[k].progress = Utils.bringFloatTo(self.resultsAnim.hover[k].progress, self.resultsAnim.hover[k].hovered and 1 or 0, self.resultsAnim.hover[k].updatedAt, 1)
                     if (self.resultsAnim.hover[k].hovered ~= isHovered) then

@@ -13,11 +13,10 @@ local anim = {
 ---@param item PageItem
 ---@param width number
 ---@param optionIndex? number
----@param otiginalItem? PageItem
-local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, optionIndex, originalItem, isLastItem)
+local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, optionIndex)
     local isOption = optionIndex ~= nil
     local drawList = imgui.GetWindowDrawList()  
-    local strId = ("item-%d-option-%s"):format(itemIndex, optionIndex or "NULL")
+    local strId = ("%d-item-%d-option-%s"):format(item.uid, itemIndex, optionIndex or "NULL")
 
     if (not anim[strId]) then
         anim[strId] = {
@@ -38,14 +37,23 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
 
     local itemPos = imgui.GetCursorScreenPos()
     local bgZoneRounding = 15
-    drawList:AddRectFilled(itemPos, itemPos + itemSize, isOption and UI.Colors.Color.Second.u32 or UI.Colors.Color.First.u32, 15, itemIndex == 1 and 1 + 2 or (itemIndex == #page.items and 4 + 8 or 0))
+
+    local roundFlags = 0
+    if (itemIndex == 1) then
+        roundFlags = roundFlags + 1 + 2
+    end
+    if (itemIndex == #page.items and not anim[strId].expanded) then
+        roundFlags = roundFlags + 4 + 8
+    end
+    
+    drawList:AddRectFilled(itemPos, itemPos + itemSize, isOption and UI.Colors.Color.Second.u32 or UI.Colors.Color.First.u32, 15, roundFlags)
     if (itemIndex > 1 and not isOption) then
         drawList:AddLine(itemPos - imgui.ImVec2(0, 1), imgui.ImVec2(itemPos.x + itemSize.x, itemPos.y - 1), UI.Colors.Color.Stroke.u32)
     end
     if (imgui.BeginChild("container-" .. strId, itemSize, true, imgui.WindowFlags.NoScrollWithMouse + imgui.WindowFlags.NoScrollbar)) then
         imgui.SetCursorPos(imgui.ImVec2(0, 0))
-        local p1 = imgui.GetCursorScreenPos()
-        -- Label
+        
+        -- Label and tags
         imgui.SetCursorPos(imgui.ImVec2(15, itemSize.y / 2 - fontSize / 2))
         if (not isOption and item.options) then
             UI.Components.ImRotate.Start();
@@ -61,8 +69,8 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
         end
         if (item.unsafe) then
             imgui.SameLine(nil, 10)
-            local unsafeLabel = type(item.unsafe) == "string" and item.unsafe or UNSAFE_ITEM_LABEL
-            imgui.TextColored(UI.Blink:GetColor(UI.Colors.Color.Red.vec4), faicons("CIRCLE_EXCLAMATION"))
+            local unsafeLabel = type(item.unsafe) == "string" and item.unsafe or Const.UNSAFE_ITEM_LABEL
+            imgui.TextDisabled(faicons("TRIANGLE_EXCLAMATION"))
             UI.Components.Hint("hint-unsafe-" .. strId, unsafeLabel)
         end
         
@@ -75,10 +83,6 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
         if (item.options and imgui.IsItemHovered()) then
             imgui.SetMouseCursor(imgui.MouseCursor.Hand)
         end
-        
-        
-
-       
 
         -- Item
         if (item.type == PageItemType.Toggle) then
@@ -90,6 +94,14 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
             if (UI.Components.Button(item.text .. "##" .. strId, size)) then
                 item.onClick()
             end
+        elseif (item.type == PageItemType.Input) then
+            local inputHeight = imgui.GetFontSize() + style.FramePadding.y * 2
+            local inputWidth = item.width or 40
+            imgui.SetCursorPos(imgui.ImVec2(itemSize.x - inputWidth - 15, itemSize.y / 2 - inputHeight / 2))
+            imgui.SetNextItemWidth(inputWidth)
+            if (imgui.InputTextWithHint("##" .. strId, item.hint or "", item.value, ffi.sizeof(item.value), item.flags or 0)) then
+                item.onChange()
+            end
         elseif (item.type == PageItemType.NoAction) then
             -- No action
         else
@@ -97,9 +109,6 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
             imgui.TextColored(UI.Colors.Color.Red.vec4, "UNSUPPORTED_TYPE " .. tostring(item.type))
         end
         imgui.SameLine()
-        local p2 = imgui.GetCursorScreenPos()
-
-        -- fgdl:AddRect(p1, p1 + ps, 0xFF00ff00, 5)
     end
     imgui.EndChild()
     
@@ -115,14 +124,13 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
                 if (imgui.BeginChild("options-for-" .. itemIndex, optionsContainerSize, false, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse) or true) then -- "or true" for PopStyleVar
                     imgui.PopStyleVar()
                     for k, v in ipairs(item.options) do
-                        drawItem(page, drawList, bgDrawList, itemIndex, v, width, k, item)
+                        drawItem(page, drawList, bgDrawList, itemIndex, v, width, k)
                     end
                 end
                 imgui.EndChild()
             end
         end
     end
-    return
 end
 
 ---@param drawList ImDrawList
@@ -132,17 +140,13 @@ end
 return function(drawList, bgDrawList, page, size)
     imgui.PushFont(UI.Font[15].Bold)
     if (imgui.BeginChild("page-container-" .. page.name, size, true)) then
-        local dl = imgui.GetWindowDrawList()
         local width = imgui.GetWindowWidth()
-        local posStart = imgui.GetCursorScreenPos()
         local itemWidth = width - 15
         imgui.PushStyleVarVec2(imgui.StyleVar.ItemSpacing, imgui.ImVec2(0, 0))
         for itemIndex, item in ipairs(page.items) do
             drawItem(page, drawList, bgDrawList, itemIndex, item, itemWidth)
         end
         imgui.PopStyleVar()
-        local posEnd = imgui.GetCursorScreenPos()
-        -- dl:AddRectFilled(posStart, imgui.ImVec2(posStart.x + itemWidth, posEnd.y), UI.Colors.Color.First.u32, 15)
     end
     imgui.EndChild()
     imgui.PopFont()

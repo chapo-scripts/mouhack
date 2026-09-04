@@ -8,11 +8,13 @@ PageItemType = {
     NoAction = "no_action",
     Selector = "selector",
     Combo = "combo",
-    Frame = "frame"
+    Frame = "frame",
+    Input = "input"
 }
 
 ---@class PageItem.Properties
 ---@field type? PageItemType
+---@field uid? number
 ---@field description? string
 ---@field label string
 ---@field onChange? fun()
@@ -37,10 +39,17 @@ PageItemType = {
 
 ---@class PageItem.Selector : PageItem.Combo
 
+---@class PageItem.Input : PageItem.Properties
+---@field value mimgui.char
+---@field onChange? fun()
+---@field hint? string
+---@field width? number
+---@field flags? number
+
 ---@class PageItem.Frame : PageItem.Properties
 ---@field func fun()
 
----@alias PageItem PageItem.Toggle | PageItem.Button | PageItem.Text | PageItem.NoAction | PageItem.Selector | PageItem.Combo | PageItem.Frame
+---@alias PageItem PageItem.Toggle | PageItem.Button | PageItem.Text | PageItem.NoAction | PageItem.Selector | PageItem.Combo | PageItem.Frame | PageItem.Input
 
 
 

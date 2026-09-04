@@ -33,9 +33,19 @@ Page:AddItem(PageItemType.NoAction, {
 Page:AddItem(PageItemType.NoAction, {
     label = "Телепорт",
     options = {
-        Page:AddItem(PageItemType.Button, { text = "Слап", label = "Вниз", onClick = function() slap(-2) end }, true),
-        Page:AddItem(PageItemType.Button, { text = "Слап", label = "Вверх", onClick = function() slap(2) end }, true),
-        Page:AddItem(PageItemType.Button, { text = "Телепорт", label = "##", onClick = function() slap(2) end }, true),
+        Page:AddItem(PageItemType.Selector, { label = "Метод телепорта", items = { "Телепорт (небезопасно)", "Курдмастер" }, onClick = function() slap(2) end }, true),
+        Page:AddItem(PageItemType.Button, {
+            text = "Телепортироваться",
+            unsafe = true,
+            label = "ТП на МЕТКУ",
+            onClick = function()
+                local blip, x, y, z = getTargetBlipCoordinates()
+                if (not blip) then
+                    return
+                end
+                setCharCoordinates(PLAYER_PED, x, y, z)
+            end
+        }, true),
     }
 }, false)
 
@@ -56,6 +66,21 @@ Page:AddItem(PageItemType.Toggle, {
     options = {
         Page:AddItem(PageItemType.NoAction, { label = "Скорость" }, true),
         Page:AddItem(PageItemType.Toggle, { label = "Изменять скорость колесиком мыши", value = Page.config.airbrake.mouseWheelSpeedControl }, true)
+    }
+})
+
+local function togglePlayerControllable(frozen)
+    local bs = raknetNewBitStream()
+    raknetBitStreamWriteInt8(bs, frozen and 1 or 0)
+    raknetEmulRpcReceiveBitStream(15, bs)
+    raknetDeleteBitStream(bs)
+end
+Page:AddItem(PageItemType.NoAction, {
+    value = Page.config.airbrake.enabled,
+    label = "Фриз",
+    options = {
+        Page:AddItem(PageItemType.Button, { label = "Разморозить персонажа", text = "Разморозить", onClick = function() togglePlayerControllable(true) end }, true),
+        Page:AddItem(PageItemType.Button, { label = "Заморозить персонажа", text = "Заморозить", onClick = function() togglePlayerControllable(false) end }, true),
     }
 })
 

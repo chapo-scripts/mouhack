@@ -75,7 +75,8 @@ UI = {
             "SIGNAL",
             "IMAGE",
             "IMAGES",
-            "CIRCLE_EXCLAMATION"
+            "CIRCLE_EXCLAMATION",
+            "TRIANGLE_EXCLAMATION"
         }
     },
     selected = { category = 1, page = 1 },

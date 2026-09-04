@@ -1,7 +1,7 @@
 ---@class Page
 ---@field icon string
 ---@field name string
----@field items PageItem
+---@field items PageItem[]
 ---@field config table<string, unknown>
 ---@field handlers table<string, function>
 
@@ -30,8 +30,10 @@ end
 ---@overload fun(self: Page, type: "selector", options: PageItem.Selector, isOption?: boolean)
 ---@overload fun(self: Page, type: "combo", options: PageItem.Selector, isOption?: boolean)
 ---@overload fun(self: Page, type: "frame", options: PageItem.Frame, isOption?: boolean)
+---@overload fun(self: Page, type: "input", options: PageItem.Input, isOption?: boolean)
 function Page:AddItem(type, options, isOption)
     options.type = type
+    options.uid = ModuleCore:GenerateItemIndex()
     if (isOption) then
         return options
     end

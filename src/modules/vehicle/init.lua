@@ -1,0 +1,7 @@
+local Player = ModuleCore.Category:new("Транспорт")
+Player:AddPage(require("modules.vehicle.main"))
+Player:AddPage(require("modules.vehicle.car"))
+Player:AddPage(require("modules.vehicle.moto"))
+-- require("modules.player.movement")(Player)
+-- require("modules.player.health")(Player)
+-- require("modules.player.weapons")(Player)

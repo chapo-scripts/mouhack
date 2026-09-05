@@ -1,6 +1,7 @@
 ---@class Category
 ---@field name string
 ---@field pages Page[]
+---@field pagesLabels string[]
 
 local Category = {}
 
@@ -15,7 +16,8 @@ function Category:new(name)
     local instance = {
         id = id,
         name = name,
-        pages = {}
+        pages = {},
+        pagesLabels = {}
     };
     local new = setmetatable(instance, {__index = self})
     table.insert(ModuleCore.categories, new)
@@ -24,7 +26,7 @@ end
 
 ---@param page Page
 function Category:AddPage(page)
-    -- self.[]
+    table.insert(self.pagesLabels, page.name)
     table.insert(self.pages, page)
 end
 

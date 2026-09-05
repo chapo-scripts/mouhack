@@ -9,5 +9,8 @@ return function(style, colors)
 
     colors[imgui.Col.Text] = imgui.ImVec4(1, 1, 1, 1)
     colors[imgui.Col.Border] = imgui.ImVec4(1, 0, 0, 1)
+
+    colors[imgui.Col.FrameBg] = UI.Colors.Color.First.vec4
+    colors[imgui.Col.FrameBgActive] = UI.Colors.Color.Stroke.vec4
     -- colors[imgui.Col.ChildBg] = imgui.ImVec4(1, 0, 0, 0)
 end

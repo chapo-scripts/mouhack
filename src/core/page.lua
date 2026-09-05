@@ -5,6 +5,7 @@
 ---@field config table<string, unknown>
 ---@field handlers table<string, function>
 
+---@type Page
 local Page = {}
 
 setmetatable(Page, {__call = function(t, ...)

@@ -1,10 +1,26 @@
-local anim = {
-    ["__example"] = {
-        expanded = false,
-        updatedAt = 0,
-        progress = 0
+local HIGHLIGHT_DURATION_SEC = 3
+local PageComponent = {
+    ---@type {uid: number, startedAt: number} | nil
+    highlight = nil,
+    anim = {
+        ["__example"] = {
+            expanded = false,
+            updatedAt = 0,
+            progress = 0
+        }
     }
 }
+
+function PageComponent:Expand(uid, isExpaneded)
+    local strId = "item-" .. uid
+    PageComponent.anim[strId].expanded = isExpaneded--not PageComponent.anim[strId].expanded
+    PageComponent.anim[strId].updatedAt = os.clock()
+end
+
+function PageComponent:IsItemExpanded(uid)
+    local strId = "item-" .. uid
+    return PageComponent.anim[strId].expanded
+end
 
 ---@param page Page
 ---@param drawList ImDrawList
@@ -16,10 +32,10 @@ local anim = {
 local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, optionIndex)
     local isOption = optionIndex ~= nil
     local drawList = imgui.GetWindowDrawList()  
-    local strId = ("%d-item-%d-option-%s"):format(item.uid, itemIndex, optionIndex or "NULL")
+    local strId = "item-" .. item.uid--("%d-item-%d-option-%s"):format(item.uid, itemIndex, optionIndex or "NULL")
 
-    if (not anim[strId]) then
-        anim[strId] = {
+    if (not PageComponent.anim[strId]) then
+        PageComponent.anim[strId] = {
             expaneded = false,
             progress = 0,
             updatedAt = 0
@@ -42,11 +58,19 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
     if (itemIndex == 1) then
         roundFlags = roundFlags + 1 + 2
     end
-    if (itemIndex == #page.items and not anim[strId].expanded) then
+    if (itemIndex == #page.items and not PageComponent.anim[strId].expanded) then
         roundFlags = roundFlags + 4 + 8
     end
     
     drawList:AddRectFilled(itemPos, itemPos + itemSize, isOption and UI.Colors.Color.Second.u32 or UI.Colors.Color.First.u32, 15, roundFlags)
+    
+    -- highlight
+    if (PageComponent.highlight and PageComponent.highlight.uid == item.uid) then
+        imgui.GetForegroundDrawList():AddRect(itemPos, itemPos + itemSize, UI.Colors.withAlpha(UI.Colors.Color.Text.u32, UI.Blink.alpha), 15, roundFlags)
+        if (os.clock() - PageComponent.highlight.startedAt > HIGHLIGHT_DURATION_SEC) then
+            PageComponent.highlight = nil
+        end
+    end
     if (itemIndex > 1 and not isOption) then
         drawList:AddLine(itemPos - imgui.ImVec2(0, 1), imgui.ImVec2(itemPos.x + itemSize.x, itemPos.y - 1), UI.Colors.Color.Stroke.u32)
     end
@@ -58,7 +82,7 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
         if (not isOption and item.options) then
             UI.Components.ImRotate.Start();
             imgui.Text(faicons("CARET_DOWN"))
-            UI.Components.ImRotate.End(math.rad(180 - (90 * anim[strId].progress)));
+            UI.Components.ImRotate.End(math.rad(180 - (90 * PageComponent.anim[strId].progress)));
             imgui.SameLine(nil, 10)
         end
         imgui.Text(item.label)
@@ -77,8 +101,7 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
         -- Expand click zone
         imgui.SetCursorPos(imgui.ImVec2(0, 0))
         if (imgui.InvisibleButton("clickzone-" .. strId, imgui.ImVec2(item.type == PageItemType.NoAction and itemSize.x or imgui.GetContentRegionAvail().x - 100, itemSize.y))) then
-            anim[strId].expanded = not anim[strId].expanded
-            anim[strId].updatedAt = os.clock()
+            PageComponent:Expand(item.uid, not PageComponent:IsItemExpanded(item.uid))
         end
         if (item.options and imgui.IsItemHovered()) then
             imgui.SetMouseCursor(imgui.MouseCursor.Hand)
@@ -113,13 +136,13 @@ local function drawItem(page, drawList, bgDrawList, itemIndex, item, width, opti
     imgui.EndChild()
     
 
-    anim[strId].progress = Utils.bringFloatTo(anim[strId].progress, anim[strId].expanded and 1 or 0, anim[strId].updatedAt, 1)
+    PageComponent.anim[strId].progress = Utils.bringFloatTo(PageComponent.anim[strId].progress, PageComponent.anim[strId].expanded and 1 or 0, PageComponent.anim[strId].updatedAt, 1)
     if (not isOption and item.options) then
         local maxHeight = #item.options * itemSize.y
-        if (anim[strId].progress > 0) then
-            if (maxHeight * anim[strId].progress > 2) then
+        if (PageComponent.anim[strId].progress > 0) then
+            if (maxHeight * PageComponent.anim[strId].progress > 2) then
                 imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(0, 0))
-                local optionsContainerSize, optionsContainerPos = imgui.ImVec2(itemSize.x, maxHeight * anim[strId].progress), imgui.GetCursorScreenPos()
+                local optionsContainerSize, optionsContainerPos = imgui.ImVec2(itemSize.x, maxHeight * PageComponent.anim[strId].progress), imgui.GetCursorScreenPos()
                 drawList:AddRectFilled(optionsContainerPos, optionsContainerPos + optionsContainerSize, UI.Colors.Color.Second.u32, 15, 4 + 8)
                 if (imgui.BeginChild("options-for-" .. itemIndex, optionsContainerSize, false, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse) or true) then -- "or true" for PopStyleVar
                     imgui.PopStyleVar()
@@ -137,7 +160,7 @@ end
 ---@param bgDrawList ImDrawList
 ---@param page Page
 ---@param size ImVec2
-return function(drawList, bgDrawList, page, size)
+function PageComponent:Draw(drawList, bgDrawList, page, size)
     imgui.PushFont(UI.Font[15].Bold)
     if (imgui.BeginChild("page-container-" .. page.name, size, true)) then
         local width = imgui.GetWindowWidth()
@@ -151,3 +174,5 @@ return function(drawList, bgDrawList, page, size)
     imgui.EndChild()
     imgui.PopFont()
 end
+
+return setmetatable(PageComponent, {__call = PageComponent.Draw})

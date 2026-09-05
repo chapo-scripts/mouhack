@@ -26,7 +26,7 @@ local function header(totalWindowSize, pos, size)
         headerDrawList:AddRect(p, p + searchButtonSize, UI.Colors.withAlpha(UI.Colors.Color.Stroke.u32, searchAnim.progress), 10)
         headerDrawList:AddText(p + imgui.ImVec2(searchButtonSize.x / 2 - searchLabelSize.x / 2, searchButtonSize.y / 2 - searchLabelSize.y / 2), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, searchAnim.progress + 0.5), searchLabel)
         if (imgui.InvisibleButton("search", searchButtonSize)) then
-            UI.Components.Search:Show(true)
+            UI.SubMenu.Search:Show(true)
         end
         local isHovered = imgui.IsItemHovered()
         if (isHovered) then
@@ -44,7 +44,7 @@ local function header(totalWindowSize, pos, size)
         imgui.PushFont(UI.Font[20].Bold)
         imgui.PushStyleColor(imgui.Col.ButtonHovered, UI.Colors.Color.Stroke.vec4)
         if (UI.Components.RoundButton("menu:settings", faicons("GEAR"), size.y - 20, true)) then
-            UI.Components.Settings:Show(true)
+            UI.SubMenu.Settings:Show(true)
         end
         imgui.PopStyleColor()
         imgui.SameLine()
@@ -91,26 +91,28 @@ imgui.OnFrame(
             bgDrawList:AddTextFontPtr(UI.Font[15].Bold, 15, pos + imgui.ImVec2(logoOffset.x + imageSize.x + 15, logoOffset.y + 3 + 20), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, 0.5), "v1.0.2")
             imgui.NewLine()
             imgui.NewLine()
-            local newCategory = UI.Components.Nav(drawList, pos, imgui.ImVec2(leftWidth, 250), ModuleCore.categories)
-            if (newCategory) then
-                UI.selected = { category = newCategory, page = 1 }
-                PAGE_NAV_ANIM.to = 1
-            end
+            UI.Components.Nav(drawList, pos, imgui.ImVec2(leftWidth, 250), ModuleCore.categories)
+            local currentCategoryIndex = UI.Components.Nav.currentTab
 
             imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(10, 10))
             imgui.SetCursorPos(imgui.ImVec2(leftWidth, headerHeight))
             if (imgui.BeginChild("menu-container", imgui.ImVec2(size.x - leftWidth, size.y - headerHeight), true, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)) then
-                if (not UI.pageNavigation[UI.selected.category]) then
-                    UI.pageNavigation[UI.selected.category] = imgui.new.int(1)
+                if (not UI.pageNavigation[currentCategoryIndex]) then
+                    UI.pageNavigation[currentCategoryIndex] = imgui.new.int(1)
                 end
-                local currentCategory = ModuleCore.categories[UI.selected.category]
+                local currentCategory = ModuleCore.categories[currentCategoryIndex]
+                local pageNameStrId = "pagenav-category:" .. currentCategoryIndex
                 if (currentCategory) then
                     if (#currentCategory.pages > 1) then
-                        UI.Components.PageNav("category:" .. UI.selected.category, UI.pageNavigation[UI.selected.category], currentCategory.pages, 150)
+                        imgui.PushFont(UI.Font[15].Bold)
+                        imgui.SetCursorPosX(imgui.GetWindowWidth() / 2 - UI.Components.PageNav:GetWidth(pageNameStrId) / 2)
+                        UI.Components.PageNav(pageNameStrId, UI.pageNavigation[UI.selected.category], currentCategory.pagesLabels, 150)
+                        imgui.PopFont()
                     end
                     
                     local pageSize = imgui.GetWindowSize() - imgui.ImVec2(15 + 15, imgui.GetCursorPosY())
-                    imgui.SetCursorPosX(10 - (pageSize.x * (PAGE_NAV_ANIM["category:" .. UI.selected.category].current - 1)) - (20 * (PAGE_NAV_ANIM["category:" .. UI.selected.category].current - 1)))
+                    local pageAnimationState = UI.Components.PageNav:GetAnimationState(pageNameStrId)
+                    imgui.SetCursorPosX(10 - (pageSize.x * (pageAnimationState - 1)) - (20 * (pageAnimationState - 1)))
                     local pageDrawList = imgui.GetWindowDrawList()
                     for pageIndex, page in ipairs(currentCategory.pages) do
                         local pagePos = imgui.GetCursorScreenPos()
@@ -128,8 +130,8 @@ imgui.OnFrame(
             imgui.EndChild()
             imgui.PopStyleVar()
 
-            UI.Components.Search:Draw(pos, size, imgui.GetForegroundDrawList())
-            UI.Components.Settings:Draw(pos, size, imgui.GetForegroundDrawList())
+            UI.SubMenu.Search:Draw(pos, size, imgui.GetForegroundDrawList())
+            UI.SubMenu.Settings:Draw(pos, size, imgui.GetForegroundDrawList())
             imgui.End()
         end
     end

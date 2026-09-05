@@ -120,6 +120,13 @@ function Search:IsEnabled()
     return self.anim.enabled, self.anim.progress == (self.anim.enabled and 1 or 0)
 end
 
+---@param target SearchResult
+function Search:ShowSelectedItem(target)
+    if (target.type == "category") then
+        UI.Components.Nav:SwitchTo(target.categoryIndex)
+    end
+end
+
 local function drawSearchInput(width)
     imgui.PushStyleVarVec2(imgui.StyleVar.FramePadding, imgui.ImVec2(15, 15))
     imgui.PushStyleVarFloat(imgui.StyleVar.FrameRounding, 15)
@@ -151,7 +158,7 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
             local contentWidth = windowSize.x / 2
             -- local contentHeight = inputSize.y
             
-            imgui.SetCursorPos(imgui.ImVec2(windowSize.x / 2 - contentWidth / 2, 50))
+            imgui.SetCursorPos(imgui.ImVec2(windowSize.x / 2 - contentWidth / 2, 50 * self.anim.progress))
             drawSearchInput(contentWidth)
 
             local oneResultSize = imgui.ImVec2(contentWidth, 10 + 15 + 5 + 20 + 10)
@@ -188,7 +195,10 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
                     local arrowIconSize = imgui.CalcTextSize(arrowIcon)
                     cDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, rPos + imgui.ImVec2(oneResultSize.x - arrowIconSize.x - 15, oneResultSize.y / 2 - arrowIconSize.y / 2), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, self.resultsAnim.hover[k].progress), arrowIcon)
 
-                    imgui.InvisibleButton("search-result:" .. v.pathString, oneResultSize)
+                    if (imgui.Button("search-result:" .. k .. v.pathString, oneResultSize)) then
+                        -- Search:ShowSelectedItem(v)
+                        sampAddChatMessage("s", -1)
+                    end
                     local isHovered = imgui.IsItemHovered()
                     self.resultsAnim.hover[k].progress = Utils.bringFloatTo(self.resultsAnim.hover[k].progress, self.resultsAnim.hover[k].hovered and 1 or 0, self.resultsAnim.hover[k].updatedAt, 1)
                     if (self.resultsAnim.hover[k].hovered ~= isHovered) then

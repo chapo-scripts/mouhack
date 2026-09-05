@@ -10,7 +10,6 @@ UI = {
         TggleButton = require("ui.components.toggle-button"),
         Page = require("ui.components.page"),
         Link = require("ui.components.link"),
-        Navbar = require("ui.components.navbar"), -- unused
         Nav = require("ui.components.nav"),
         PageNav = require("ui.components.page-nav"),
         Selector = require("ui.components.selector"),
@@ -18,13 +17,17 @@ UI = {
         RoundButton = require("ui.components.round-button"),
         Button = require("ui.components.button"),
         RoundedGradientRect = require("ui.components.rounded-gradient-rect"),
-        Search = require("ui.components.search"),
-        Settings = require("ui.components.settings"),
+        -- Search = require("ui.components.search"),
+        -- Settings = require("ui.components.settings"),
         ImRotate = require("ui.components.imrotate"),
         TextWithSearch = require("ui.components.text-with-search")
     },
     Windows = {
         Main = require("ui.windows.main")
+    },
+    SubMenu = {
+        Search = require("ui.submenu.search"),
+        Settings = require("ui.submenu.settings")
     },
     Resource = {
         Fonts = require("ui.resource.fonts"),
@@ -121,10 +124,10 @@ end)
 addEventHandler("onWindowMessage", function(msg, key)
     if (msg == 0x0100) then
         if (key == VK_ESCAPE and MainWindowState[0]) then
-            if (UI.Components.Search:IsEnabled()) then
-                UI.Components.Search:Show(false)
-            elseif (UI.Components.Settings:IsEnabled()) then
-                UI.Components.Settings:Show(false)
+            if (UI.SubMenu.Search:IsEnabled()) then
+                UI.SubMenu.Search:Show(false)
+            elseif (UI.SubMenu.Settings:IsEnabled()) then
+                UI.SubMenu.Settings:Show(false)
             else
                 MainWindowState[0] = false
             end

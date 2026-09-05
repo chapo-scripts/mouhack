@@ -49,7 +49,7 @@ function Settings:Draw(windowPos, windowSize, bgDrawList)
         imgui.PopFont()
 
         if (imgui.Button("test")) then
-            UI.Components.Search:ShowSelectedItem({ type = "category", categoryIndex = 3})
+            UI.SubMenu.Search:ShowSelectedItem({ type = "category", categoryIndex = 3})
         end
 
         imgui.EndPopup()

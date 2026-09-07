@@ -13,6 +13,7 @@
     "thanks": [
         "@Musaigen: инструменты разработки \"moonly\" и \"moonly-cli\"",
         "@Cosmo: компоненты ImGui, некоторые функции для базовых модулей",
+        "@DoubleTapInside: плавный скролл ImGui",
         "@XRLM: компоненты ImGui",
         "@AnWu: компоненты ImGui"
     ],

@@ -8,6 +8,7 @@ script_version(DEVELOPMENT and VERSION or "DEVELOPMENT") ---@diagnostic disable-
 script_author(DEVELOPMENT and AUTHOR or "DEV") ---@diagnostic disable-line
 
 require("libchecker")
+Memory = require("memory")
 ffi = require("ffi")
 Const = require("constants")
 require("core")

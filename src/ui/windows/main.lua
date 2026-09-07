@@ -7,6 +7,50 @@ local searchAnim = {
     progress = 0
 }
 
+local eyeAnim = {
+    start = 0,
+    y = 0,
+    state = 'in'
+}
+local function getOffset(dx, dy)
+    local size = 4
+    return {x = math.max(-size/2, math.min(size/2, dx / 10)), y = math.max(-size/2, math.min(size/2, dy / 10))}
+end
+
+---@param drawList ImDrawList
+---@param pos ImVec2
+---@param size ImVec2
+local function drawLogo(drawList, pos, size)
+    -- drawList = imgui.GetForegroundDrawList()
+    drawList:AddImage(UI.Texture.logo, pos, pos + size)
+    -- Logo eye
+    local eyeOffset = imgui.ImVec2(0, 70);
+    local eyeCenter = pos + imgui.ImVec2(size.x / 2 + 2, size.y / 2.8);
+    drawList:AddCircleFilled(eyeCenter, 5, UI.Colors.Color.First.u32, 25);
+    local mousePos = imgui.GetMousePos();
+    eyeOffset = getOffset(mousePos.x - (eyeCenter.x + 2), mousePos.y - (eyeCenter.y + 2)); ---@diagnostic disable-line
+    local eyePos = imgui.ImVec2(eyeOffset.x + eyeCenter.x, eyeOffset.y + eyeCenter.y);
+    drawList:AddCircleFilled(eyePos, 2, UI.Colors.Color.Text.u32, 25);
+
+    -- Eye blinking
+    if (eyeAnim.state ~= 'wait') then
+        eyeAnim.y = Utils.bringFloatTo(eyeAnim.state == 'in' and -4 or 4, eyeAnim.state == 'in' and 4 or -4, eyeAnim.start, 0.5);
+        drawList:AddRectFilled(eyeCenter - imgui.ImVec2(4, 4), eyeCenter + imgui.ImVec2(4, eyeAnim.y), UI.Colors.Color.First.u32, 25);
+    end
+    if (eyeAnim.state == 'in' and eyeAnim.y == 4) then
+        eyeAnim.state = 'out';
+        eyeAnim.start = os.clock();
+    elseif (eyeAnim.state == 'out' and eyeAnim.y == -4) then
+        eyeAnim.state = 'wait';
+        eyeAnim.start = os.clock();
+    elseif (eyeAnim.state == 'wait') then
+        if (os.clock() - eyeAnim.start > 3.5) then
+            eyeAnim.state = 'in';
+            eyeAnim.start = os.clock();
+        end
+    end
+end
+
 local function header(totalWindowSize, pos, size)
     local mainWindowSize = imgui.GetWindowSize()
     imgui.SetCursorScreenPos(pos)
@@ -83,9 +127,10 @@ imgui.OnFrame(
             imgui.PopFont()
 
 
-            local logoOffset = imgui.ImVec2(30, 30)
-            local imageSize = imgui.ImVec2(40, 40)
-            bgDrawList:AddImage(UI.Texture.logo, pos + logoOffset, pos + logoOffset + imageSize)
+            local logoOffset = imgui.ImVec2(15, 15)
+            local imageSize = imgui.ImVec2(45, 45)
+            drawLogo(bgDrawList, pos + logoOffset, imageSize)
+            -- bgDrawList:AddImage(UI.Texture.logo, pos + logoOffset, pos + logoOffset + imageSize)
             -- bgDrawList:AddRectFilled(pos + imgui.ImVec2(15, 15), pos + imgui.ImVec2(15, 15) + imageSize, 0xFFffffff, 5)
             bgDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, pos + imgui.ImVec2(logoOffset.x + imageSize.x + 15, logoOffset.y + 3), UI.Colors.Color.Text.u32, "MouHack")
             bgDrawList:AddTextFontPtr(UI.Font[15].Bold, 15, pos + imgui.ImVec2(logoOffset.x + imageSize.x + 15, logoOffset.y + 3 + 20), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, 0.5), "v1.0.2")
@@ -103,11 +148,23 @@ imgui.OnFrame(
                 local currentCategory = ModuleCore.categories[currentCategoryIndex]
                 local pageNameStrId = "pagenav-category:" .. currentCategoryIndex
                 if (currentCategory) then
+
+                    if (not UI.Components.PageNav.preloaded) then
+                        local list = {}
+                        for index, category in ipairs(ModuleCore.categories) do
+                            table.insert(list, { strId = "pagenav-category:" .. index, items = category.pagesLabels })
+                        end
+                        -- UI.Components.PageNav:Preload(list)
+                        UI.Components.PageNav.preloaded = true
+                    end
+
                     if (#currentCategory.pages > 1) then
+                        local count = UI.Style:Push(true)
                         imgui.PushFont(UI.Font[15].Bold)
                         imgui.SetCursorPosX(imgui.GetWindowWidth() / 2 - UI.Components.PageNav:GetWidth(pageNameStrId) / 2)
                         UI.Components.PageNav(pageNameStrId, UI.pageNavigation[UI.selected.category], currentCategory.pagesLabels, 150)
                         imgui.PopFont()
+                        UI.Style:Pop(count)
                     end
                     
                     local pageSize = imgui.GetWindowSize() - imgui.ImVec2(15 + 15, imgui.GetCursorPosY())
@@ -118,7 +175,9 @@ imgui.OnFrame(
                         local pagePos = imgui.GetCursorScreenPos()
                         pageDrawList:PushClipRect(pagePos, pagePos + pageSize) ---@diagnostic disable-line
                         bgDrawList:PushClipRect(pagePos, pagePos + pageSize) ---@diagnostic disable-line
+                        local styleVarsCount = UI.Style:Push(false)
                         UI.Components.Page(pageDrawList, bgDrawList, page, pageSize)
+                        UI.Style:Pop(styleVarsCount)
                         pageDrawList:PopClipRect() ---@diagnostic disable-line
                         bgDrawList:PopClipRect() ---@diagnostic disable-line
                         imgui.SameLine(nil, 20)

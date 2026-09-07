@@ -1,13 +1,12 @@
+---@global
 ---@class Category
 ---@field name string
 ---@field pages Page[]
 ---@field pagesLabels string[]
+---@field new fun(self, name: string): Category
+---@field AddPage fun(self: Category, page: Page)
 
 local Category = {}
-
-setmetatable(Category, {__call = function(t, ...)
-    return t:new(...)
-end})
 
 ---@param name string
 ---@return Category

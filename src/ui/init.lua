@@ -20,7 +20,8 @@ UI = {
         -- Search = require("ui.components.search"),
         -- Settings = require("ui.components.settings"),
         ImRotate = require("ui.components.imrotate"),
-        TextWithSearch = require("ui.components.text-with-search")
+        TextWithSearch = require("ui.components.text-with-search"),
+        Scroller = require("ui.components.scroller"),
     },
     Windows = {
         Main = require("ui.windows.main")

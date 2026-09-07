@@ -8,6 +8,9 @@
 ---@field categoryIndex number
 ---@field pageIndex? number
 ---@field itemIndex? number
+---@field optionIndex? number
+---@field targetItemUid? number
+---@field targetOptionUid? number
 ---@field optinIndex? number
 ---@field positions? number[]
 
@@ -65,10 +68,14 @@ function Search:Init()
         for pageIndex, page in ipairs(category.pages) do
             pushItem("page", { categoryIndex, pageIndex }, { category.name, page.name })
             for itemIndex, item in ipairs(page.items) do
-                pushItem("item", { categoryIndex, pageIndex, itemIndex }, { category.name, page.name, item.label }, {item.uid})
+                if (not item.noIndexInSearch) then
+                    pushItem("item", { categoryIndex, pageIndex, itemIndex }, { category.name, page.name, item.label }, {item.uid})
+                end
                 if (item.options) then
                     for optionIndex, option in ipairs(item.options) do
-                        pushItem("option", { categoryIndex, pageIndex, itemIndex, optionIndex }, { category.name, page.name, item.label, option.label }, {item.uid, option.uid})
+                        if (not option.noIndexInSearch) then
+                            pushItem("option", { categoryIndex, pageIndex, itemIndex, optionIndex }, { category.name, page.name, item.label, option.label }, {item.uid, option.uid})
+                        end
                     end
                 end
             end
@@ -111,6 +118,7 @@ function Search:Show(enabled)
     self.anim.enabled = enabled
     self.anim.updatedAt = os.clock()
     imgui.StrCopy(self.buffer, "")
+    Search:Find()
 end
 
 function Search:IsEnabled()
@@ -125,12 +133,14 @@ function Search:ShowSearchResult(target)
             -- TODO: краш если выбранная панель навигации еще не была отображена пользователю (PageNav.anim, PageNav.sizes для выбранного strId не определены)
             UI.Components.PageNav:SwitchTo("pagenav-category:" .. target.categoryIndex, target.pageIndex)
             if (target.targetItemUid) then
-                if (target.optinIndex) then
+                if (target.optionIndex) then
                     -- expand target.itemIndex
-                    UI.Components.Page:Expand(target.targetItemUid, false)
-                    UI.Components.Page.highlight = { uid = target.targetOptionUid, startedAt = os.clock() }
+                    print("This is item, displaying it...")
+                    UI.Components.Page:ExpandAll(false)
+                    UI.Components.Page:Expand(target.targetItemUid, true)
+                    UI.Components.Page.highlight = { uid = target.targetOptionUid, startedAt = os.clock(), shouldScroll = true }
                 else
-                    UI.Components.Page.highlight = { uid = target.targetItemUid, startedAt = os.clock() }
+                    UI.Components.Page.highlight = { uid = target.targetItemUid, startedAt = os.clock(), shouldScroll = true }
                 end
             end
         end
@@ -174,18 +184,18 @@ function Search:DrawResultsContainer(size)
             end
             local rPos = imgui.GetCursorScreenPos()
             cDrawList:AddRectFilled(rPos, rPos + oneResultSize, imgui.GetColorU32(imgui.Col.FrameBg, Search.anim.progress), 15)
-            cDrawList:AddRectFilled(rPos, rPos + oneResultSize, UI.Colors.withAlpha(UI.Colors.Color.Stroke.u32, self.resultsAnim.hover[k].progress), 15)
+            cDrawList:AddRectFilled(rPos, rPos + oneResultSize, imgui.GetColorU32(imgui.Col.TextDisabled, self.resultsAnim.hover[k].progress), 15)
             cDrawList:AddText(rPos + imgui.ImVec2(10, 10), imgui.GetColorU32(imgui.Col.Text, Search.anim.progress - 0.5), searchResultType[v.type].icon .. " " .. searchResultType[v.type].label)
         
         
-            imgui.PushFont(UI.Font[20].Bold)
+            imgui.PushFont(UI.Font[15].Bold)
             -- TODO: Add search hightlight
-            cDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, rPos + imgui.ImVec2(10, 10 + 15 + 5), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, Search.anim.progress), v.pathString)
+            cDrawList:AddTextFontPtr(UI.Font[15].Bold, 15, rPos + imgui.ImVec2(10, 10 + 15 + 5), imgui.GetColorU32(imgui.Col.Text, Search.anim.progress), v.pathString)
             imgui.PopFont()
             
             local arrowIcon = faicons("CARET_RIGHT")
             local arrowIconSize = imgui.CalcTextSize(arrowIcon)
-            cDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, rPos + imgui.ImVec2(oneResultSize.x - arrowIconSize.x - 15, oneResultSize.y / 2 - arrowIconSize.y / 2), UI.Colors.withAlpha(UI.Colors.Color.Text.u32, self.resultsAnim.hover[k].progress), arrowIcon)
+            cDrawList:AddTextFontPtr(UI.Font[20].Bold, 20, rPos + imgui.ImVec2(oneResultSize.x - arrowIconSize.x - 15, oneResultSize.y / 2 - arrowIconSize.y / 2), imgui.GetColorU32(imgui.Col.Text, self.resultsAnim.hover[k].progress), arrowIcon)
             if (imgui.InvisibleButton("search-result:" .. k .. v.pathString, oneResultSize)) then
                 self:ShowSearchResult(v)
             end
@@ -234,7 +244,9 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
         
         local containerSize = imgui.ImVec2(contentWidth, imgui.GetWindowHeight() - 175)
         imgui.SetCursorPosX(windowSize.x / 2 - contentWidth / 2)
+        local sCount = UI.Style:Push(true)
         self:DrawResultsContainer(containerSize)
+        UI.Style:Pop(sCount)
         UI.Components.CenterText("Нажмите ESC для выхода",UI.Colors.withAlpha(UI.Colors.Color.Text.vec4, self.anim.progress - 0.5) )
         imgui.PopFont()
         imgui.EndPopup()

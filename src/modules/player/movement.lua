@@ -30,14 +30,32 @@ Page:AddItem(PageItemType.NoAction, {
     }
 }, false)
 
+Page.config.teleport = { method = imgui.new.int(0) }
 Page:AddItem(PageItemType.NoAction, {
     label = "Телепорт",
     options = {
-        Page:AddItem(PageItemType.Selector, { label = "Метод телепорта", items = { "Телепорт (небезопасно)", "Курдмастер" }, onClick = function() slap(2) end }, true),
+        Page:AddItem(PageItemType.Selector, {
+            label = "Метод телепорта",
+            items = { "Телепорт (небезопасно)", "Курдмастер" },
+            value = Page.config.teleport.method,
+            onClick = function() slap(2) end
+        }, true),
         Page:AddItem(PageItemType.Button, {
             text = "Телепортироваться",
             unsafe = true,
-            label = "ТП на МЕТКУ",
+            label = "Телепорт на МЕТКУ",
+            onClick = function()
+                local blip, x, y, z = getTargetBlipCoordinates()
+                if (not blip) then
+                    return
+                end
+                setCharCoordinates(PLAYER_PED, x, y, z)
+            end
+        }, true),
+        Page:AddItem(PageItemType.Button, {
+            text = "Телепортироваться",
+            unsafe = true,
+            label = "Телепорт на ЧЕКПОИНТ",
             onClick = function()
                 local blip, x, y, z = getTargetBlipCoordinates()
                 if (not blip) then
@@ -84,9 +102,34 @@ Page:AddItem(PageItemType.NoAction, {
     }
 })
 
+for i = 1, 20 do
+    Page:AddItem(PageItemType.NoAction, {
+        label = "Test label #" .. i
+    })
+end
+
+local f = renderCreateFont("Arial", 15, 5)
+
+local sprintHookLastPressed = 0
+
 Page:on("loop", function()
     if (Page.config.airbrake.enabled[0]) then
         printStringNow("ASD", 100)
+    end
+
+    if (Page.config.infinityRun[0]) then
+        Memory.setint8(0xB7CEE4, 1)
+    end
+
+    if (Page.config.sprintHook[0]) then
+        if (isButtonPressed(nil, 16)) then
+            if (os.clock() - sprintHookLastPressed > 0.1) then
+                setGameKeyState(16, 256)
+                setGameKeyState(16, 0)
+                sprintHookLastPressed = os.clock()
+            end
+            
+        end
     end
 end)
 

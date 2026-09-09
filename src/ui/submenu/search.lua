@@ -83,22 +83,25 @@ function Search:Init()
     end
 end
 
+local searchIn, searchInType = imgui.new.int(1), {
+    "_", "category", "page", "item", "option"
+}
+
 function Search:Find()
-    if (#self.possibleResults) then
+    if (#self.possibleResults == 0) then
         self:Init()
     end
 
     self.searchResults = {}
     local query = u8(string.toLower(u8:decode(ffi.string(self.buffer))))
     if (#query == 0) then
-        return
+        -- return
     end
     for _, r in ipairs(self.possibleResults) do
 
         local pathLower = u8(string.toLower(u8:decode(r.pathString)))
         local hasFound = pathLower:find(query)
-        print(hasFound, u8:decode(query), u8:decode(pathLower))
-        if (hasFound) then
+        if (hasFound and (searchIn[0] == 1 or r.type == searchInType[searchIn[0]])) then
             local positions, searchIndex = {}, 1;
             while true do
                 local s, e = string.find(pathLower, query, searchIndex, nil);
@@ -158,11 +161,22 @@ function Search:DrawSearchInput(width)
     if (imgui.InputTextWithHint("##Search.buffer", "Начните вводить название функции или параметра", Search.buffer, ffi.sizeof(Search.buffer))) then
         Search:Find()
     end
+    
     if (not imgui.IsAnyItemHovered()) then
         imgui.SetKeyboardFocusHere()
     end
     imgui.PopStyleVar(3)
+
     imgui.PopStyleColor()
+
+    local sCount = UI.Style:Push(true)
+    imgui.PushFont(UI.Font[15].Bold)
+    imgui.SetCursorPosX(imgui.GetWindowWidth() / 2 - UI.Components.PageNav:GetWidth("search-in") / 2)
+    if (UI.Components.PageNav("search-in", searchIn, { "Везде", "Категории", "Страницы", "Функции", "Параметры" })) then
+        self:Find()
+    end
+    imgui.PopFont()
+    UI.Style:Pop(sCount)
 end
 
 ---@param size ImVec2

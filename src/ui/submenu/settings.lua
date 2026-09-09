@@ -17,6 +17,12 @@ end
 
 local tab = imgui.new.int(1)
 
+local tabs = {}
+
+tabs[1] = function()
+
+end
+
 ---@param windowPos ImVec2
 ---@param windowSize ImVec2
 ---@param bgDrawList ImDrawList
@@ -32,6 +38,8 @@ function Settings:Draw(windowPos, windowSize, bgDrawList)
     imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(15, 15))
     imgui.PushStyleColor(imgui.Col.PopupBg, UI.Colors.withAlpha(UI.Colors.Color.Second.vec4, self.anim.progress - 0.1))
     if (imgui.BeginPopup("settings", 0)) then
+        local style = imgui.GetStyle()
+        local size = imgui.GetWindowSize()
         imgui.SetWindowFocus()
         
         imgui.PushFont(UI.Font[24].Bold)
@@ -39,18 +47,25 @@ function Settings:Draw(windowPos, windowSize, bgDrawList)
         imgui.PopFont()
 
         imgui.PushFont(UI.Font[15].Bold)
+        local sCount = UI.Style:Push(true)
+        local navWidth = UI.Components.PageNav:GetWidth("script:settings")
+        imgui.SetCursorPos(imgui.ImVec2(size.x / 2 - navWidth / 2, 50 * self.anim.progress))
         UI.Components.PageNav("script:settings", tab, {
-            "Модулиaaaaaaaaaaaaaaaaa",
-            "Бинды",
             "Скрипт",
+            "Модули",
+            "Бинды",
             "Авторы"
         }, 150)
-        imgui.Text(tostring(UI.Components.PageNav:GetAnimationState("script:settings")))
+        UI.Style:Pop(sCount)
+        local dl = imgui.GetWindowDrawList()
+        imgui.SetCursorPos(imgui.ImVec2(15, (50 + style.FramePadding.y * 2 + imgui.GetFontSize()) * self.anim.progress))
+        if (imgui.BeginChild("settings-container", imgui.ImVec2(size.x - 15 - 15, size.y - 50 - 50 - 15 - 20), true)) then
+            
+        end
+        imgui.EndChild()
+        
         imgui.PopFont()
 
-        if (imgui.Button("test")) then
-            UI.SubMenu.Search:ShowSelectedItem({ type = "category", categoryIndex = 3})
-        end
 
         imgui.EndPopup()
     end

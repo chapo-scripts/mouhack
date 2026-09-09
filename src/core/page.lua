@@ -17,14 +17,8 @@
 ---@field AddItem fun(self: Page, type: "textarea", options: PageItem.TextArea, isOption?: boolean)
 ---@field AddItem fun(self: Page, type: "checkbox", options: PageItem.Checkbox, isOption?: boolean)
 ---@field AddItem fun(self: Page, type: "color", options: PageItem.Color, isOption?: boolean)
-----@field AddItem fun(self: Page, type: "toggle", options: PageItem.Toggle, isOption?: boolean)
-----@field AddItem fun(self: Page, type: "button", options: PageItem.Button, isOption?: boolean)
-----@field AddItem fun(self: Page, type: "no_action", options: PageItem.NoAction, isOption?: boolean)
-----@field AddItem fun(self: Page, type: "selector", options: PageItem.Selector, isOption?: boolean)
-----@field AddItem fun(self: Page, type: "combo", options: PageItem.Selector, isOption?: boolean)
-----@field AddItem fun(self: Page, type: "frame", options: PageItem.Frame, isOption?: boolean)
-----@field AddItem fun(self: Page, type: "input", options: PageItem.Input, isOption?: boolean)
-----@field AddItem fun(self: Page, type: PageItemType.Text, options: PageItem.Input, isOption?: boolean)
+---@field AddItem fun(self: Page, type: "slider_float", options: PageItem.SliderFloat, isOption?: boolean)
+---@field AddItem fun(self: Page, type: "slider_int", options: PageItem.SliderInt, isOption?: boolean)
 
 local Page = {}
 
@@ -40,6 +34,10 @@ function Page:new(name)
         handlers = {}
     }
     return setmetatable(instance, {__index = self})
+end
+
+function Page:InitializeConfig()
+    
 end
 
 ---@param type string
@@ -67,29 +65,3 @@ end
 
 ---@cast Page Page
 return Page
-
-
--- ---@class Page
--- ---@field icon string
--- ---@field name string
--- ---@field items PageItem[]
--- ---@field config table<string, unknown>
--- ---@field handlers table<string, function>
--- ---@field TestFunc fun(self: Page, type: string, opts: table)
-
--- ---@type Page
--- Page = {}
-
--- ---@overload fun(self, type: "num", opts: {num: number})
--- ---@overload fun(self, type: "str", opts: {num: string})
--- ---@overload fun(self, type: "bool", opts: {num: boolean})
--- ---@param type string
--- ---@param opts table
--- function Page:TestFunc(type, opts)
-
--- end
-
-
-
-
--- return PageClass

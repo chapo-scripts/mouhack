@@ -39,7 +39,7 @@ function Style:ApplyDefaultStyle(style, colors, inversed)
     colors[imgui.Col.ModalWindowDimBg] = imgui.ImVec4(0, 0, 0, 0.25)
     colors[imgui.Col.FrameBg] = first
     colors[imgui.Col.FrameBgActive] = UI.Colors.Color.Stroke.vec4
-    -- colors[imgui.Col.ChildBg] = imgui.ImVec4(1, 0, 0, 0)
+    -- colors[imgui.Col.ChildBg] = imgui.ImVec4(1, 0, 0, 1)
 end
 
 return setmetatable(Style, { __call = Style.ApplyDefaultStyle })

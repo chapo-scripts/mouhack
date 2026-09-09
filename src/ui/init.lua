@@ -11,6 +11,7 @@ UI = {
         Page = require("ui.components.page"),
         Link = require("ui.components.link"),
         Nav = require("ui.components.nav"),
+        Header = require("ui.components.header"),
         PageNav = require("ui.components.page-nav"),
         Selector = require("ui.components.selector"),
         Hint = require("ui.components.hint"),

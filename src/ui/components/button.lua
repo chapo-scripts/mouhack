@@ -66,6 +66,9 @@ return function(label, size, duration)
     imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(pool["color"]))  ---@diagnostic disable-line
     imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(pool["color"]))  ---@diagnostic disable-line
     local result = imgui.Button(label, size or imgui.ImVec2(0, 0))
+    if (imgui.IsItemHovered()) then
+        imgui.SetMouseCursor(imgui.MouseCursor.Hand)
+    end
     imgui.PopStyleColor(3)
 
     if result then

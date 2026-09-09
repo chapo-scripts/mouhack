@@ -16,9 +16,32 @@ Page.config.objects = {
     }
 }
 
+Page.config.pickups = {
+    render = imgui.new.bool(false)
+}
+local takePickupId = imgui.new.char[16]("")
+Page:AddItem("input", {
+    label = "Поднять пикап",
+    hint = "Введите ID пикапа и нажмите Enter",
+    width = 200,
+    value = takePickupId,
+    flags = imgui.InputTextFlags.CharsDecimal,
+    onChange = function()
+        local id = tonumber(ffi.string(takePickupId))
+        if (not id) then
+            return
+        end
+        print("Taken")
+        sampSendPickedUpPickup(id)
+    end
+})
+
 local font = renderCreateFont("Trebuchet MS", 8, 5)
 
 Page:on("loop", function()
+    if (Page.config.pickups.render[0]) then
+        -- draw pickups
+    end
     if (Page.config.objects.render.enabled[0]) then
         local x, y, z = getCharCoordinates(PLAYER_PED)
         for _, handle in ipairs(getAllObjects()) do

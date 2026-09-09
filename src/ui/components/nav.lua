@@ -64,6 +64,9 @@ function Nav:Draw(drawList, pos, size, items, selected)
                 self.anim.hover[k].hovered = isHovered
                 self.anim.hover[k].updatedAt = os.clock()
             end
+            if (imgui.IsItemHovered()) then
+                imgui.SetMouseCursor(imgui.MouseCursor.Hand)
+            end
         end
     end
     imgui.EndChild()

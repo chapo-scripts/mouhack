@@ -13,19 +13,20 @@ PageItemType = {
     InputInt = "input_int",
     TextArea = "textarea",
     Checkbox = "checkbox",
-    Color = "color"
+    Color = "color",
+    SliderFloat = "slider_float",
+    SliderInt = "slider_int"
 }
 
 ---@class PageItem.Properties
+---@field label string
 ---@field type? PageItemType
 ---@field uid? number
 ---@field description? string
----@field label string
----@field onChange? fun()
 ---@field options? PageItem[]
 ---@field unsafe? string|boolean
----@field hint? string
 ---@field noIndexInSearch? boolean
+---@field onClick? fun()
 ---@field onFrame? fun(drawList: ImDrawList)
 
 ---@class PageItem.NoAction : PageItem.Properties
@@ -34,9 +35,8 @@ PageItemType = {
 ---@field value mimgui.bool
 
 ---@class PageItem.Button : PageItem.Properties
----@field text string
+---@field text? string
 ---@field size? ImVec2
----@field onClick fun()
 
 ---@class PageItem.Text : PageItem.Properties
 ---@field text string
@@ -75,7 +75,20 @@ PageItemType = {
 ---@field width? number
 ---@field flags? number
 
------@alias PageItem PageItem.Toggle | PageItem.Button | PageItem.Text | PageItem.NoAction | PageItem.Selector | PageItem.Combo | PageItem.Frame | PageItem.Input | PageItem.InputInt | PageItem.TextArea | PageItem.Checkbox | PageItem.Color
+---@class PageItem.SliderFloat : PageItem.Properties
+---@field value mimgui.float
+---@field min number
+---@field max number
+---@field width? number
+---@field format? string
+
+---@class PageItem.SliderInt : PageItem.Properties
+---@field value mimgui.int
+---@field min number
+---@field max number
+---@field width? number
+---@field format? string
+
 ---@alias PageItem
 ---| PageItem.Toggle
 ---| PageItem.Button
@@ -89,3 +102,5 @@ PageItemType = {
 ---| PageItem.TextArea
 ---| PageItem.Checkbox
 ---| PageItem.Color
+---| PageItem.SliderFloat
+---| PageItem.SliderInt

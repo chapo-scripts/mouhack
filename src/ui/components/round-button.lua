@@ -20,7 +20,9 @@ return function(strId, icon, width, rotateIconOnHover)
     local p = imgui.GetCursorScreenPos()
     local result = imgui.InvisibleButton(icon .. strId, imgui.ImVec2(width, width))
     local isHovered, isActive = imgui.IsItemHovered(), imgui.IsItemActive()
-
+    if (isHovered) then
+        imgui.SetMouseCursor(imgui.MouseCursor.Hand)
+    end
     if (ROUND_BUTTON_ANIM[strId].hovered ~= isHovered) then
         ROUND_BUTTON_ANIM[strId].hovered = isHovered
         ROUND_BUTTON_ANIM[strId].updatedAt = os.clock()

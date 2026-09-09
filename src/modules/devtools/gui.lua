@@ -10,7 +10,7 @@ local showDialog = {
     text = imgui.new.char[4096]("Текст"),
     b1 = imgui.new.char[32]("Ок"),
     b2 = imgui.new.char[32]("Закрыть"),
-    styleList = { "DIALOG_STYLE_MSGBOX", "DIALOG_STYLE_INPUT", "DIALOG_STYLE_LIST", "DIALOG_STYLE_PASSWORD", "DIALOG_STYLE_TABLIST", "DIALOG_STYLE_TABLIST_HEADERS" }
+    styleList = { "MSGBOX", "INPUT", "LIST", "PASSWORD", "TABLIST", "TABLIST_HEADERS" }
 }
 
 function showDialog:show()
@@ -38,10 +38,10 @@ Page:AddItem(PageItemType.Button, {
     options = {
         Page:AddItem(PageItemType.Input, { noIndexInSearch = true, width = 150, label = "ID", value = showDialog.id, flags = imgui.InputTextFlags.CharsDecimal }, true),
         Page:AddItem(PageItemType.Input, { noIndexInSearch = true, width = 150, label = "Заголовок", value = showDialog.title }, true),
-        Page:AddItem(PageItemType.Input, { noIndexInSearch = true, width = 150, label = "Текст", value = showDialog.text }, true),
+        Page:AddItem(PageItemType.TextArea, { noIndexInSearch = true, width = 150, label = "Текст", value = showDialog.text }, true),
         Page:AddItem(PageItemType.Input, { noIndexInSearch = true, width = 150, label = "Кнопка #1", value = showDialog.b1 }, true),
         Page:AddItem(PageItemType.Input, { noIndexInSearch = true, width = 150, label = "Кнопка #2", value = showDialog.b2 }, true),
-        Page:AddItem(PageItemType.Combo, { noIndexInSearch = true, label = "Тип", items = showDialog.styleList }, true)
+        Page:AddItem(PageItemType.Combo, { noIndexInSearch = true, width = 150, label = "Тип", items = showDialog.styleList, value = showDialog.style }, true)
     }
 })
 

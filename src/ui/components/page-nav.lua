@@ -41,7 +41,10 @@ end
 ---@param fixedItemWidth? number
 function PageNav:Draw(strId, selected, items, fixedItemWidth)
     local clicked
-    assert(type(items) == "table" and #items > 0, "items must be a string[]")
+    -- items = {"1", "2"}
+    -- print(strId, table.toString(items))
+    -- print(strId, selected, items, fixedItemWidth)
+    -- assert(type(items) == "table" and #items > 0, "items must be a string[]")
     assert(selected and selected[0], "selected must be ffi.new(int)")
     
     local currentItem = selected[0]

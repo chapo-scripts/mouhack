@@ -7,6 +7,11 @@ Config = {
         cheat = imgui.new.char[16]("")
     },
 
+    ---@type {categoryStrId: Category, pageStrId: Page, itemStrId: PageItem, hotkey?: { enabled: boolean, id: number, keys: number[], callback: function, mode: mimgui.int }}[]
+    binds = {
+        
+    },
+
     ---@type table<string, {enabled: mimgui.bool, pages: table<string, unknown>}>
     modules = {
         ["author:module_name"] = {

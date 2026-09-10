@@ -29,7 +29,9 @@ local Search = {
     ---@type SearchResult[]
     searchResults = {},
     ---@type SearchResult[]
-    possibleResults = {}
+    possibleResults = {},
+    ---@type string[]
+    possibleResultsCombo = {}
 }
 
 local searchResultType = {

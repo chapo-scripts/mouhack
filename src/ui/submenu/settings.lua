@@ -60,7 +60,58 @@ function Settings:Draw(windowPos, windowSize, bgDrawList)
         local dl = imgui.GetWindowDrawList()
         imgui.SetCursorPos(imgui.ImVec2(15, (50 + style.FramePadding.y * 2 + imgui.GetFontSize()) * self.anim.progress))
         if (imgui.BeginChild("settings-container", imgui.ImVec2(size.x - 15 - 15, size.y - 50 - 50 - 15 - 20), true)) then
-            
+            local size = imgui.GetWindowSize()
+            if (tab[0] == 3) then
+                
+                -- imgui.PushStyleColor(imgui.Col.ChildBg, imgui.GetStyle().Colors[imgui.Col.WindowBg])
+                imgui.PushFont(UI.Font[20].Bold)
+                local bindSize = imgui.ImVec2(size.x - 30, 50)
+                local drawList = imgui.GetWindowDrawList()
+                local style = imgui.GetStyle()
+                for index, r in ipairs(UI.SubMenu.Search.possibleResults) do
+                    if (r.type == "item" or r.type == "option") then
+                        
+                        local p = imgui.GetCursorScreenPos()
+                        drawList:AddRectFilled(p, p + bindSize, UI.Colors.withAlpha(UI.Colors.Color.First.u32, self.anim.progress), 10)
+                        
+                        if (imgui.BeginChild("bind-" .. index, bindSize, true, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)) then
+                            imgui.PushFont(UI.Font[15].Bold)
+                            
+                            local checkboxSize = imgui.GetFontSize() + style.FramePadding.y * 2
+                            imgui.SetCursorPosY(bindSize.y / 2 - checkboxSize / 2)
+                            imgui.Checkbox("##bind-enable-" .. index, imgui.new.bool(true))
+
+                            imgui.SetCursorPos(imgui.ImVec2(style.WindowPadding.x * 2 + checkboxSize, bindSize.y / 2 - imgui.CalcTextSize(r.pathString, nil, nil, 500).y / 2))
+                            -- imgui.TextDisabled(("%s %s %s %s"):format("Персонаж", faicons("CARET_RIGHT"), "Передвижение", faicons("CARET_RIGHT")))
+                            imgui.PushTextWrapPos(500)
+                            imgui.TextDisabled(r.pathString)
+                            imgui.PopTextWrapPos()
+                            imgui.PopFont()
+                            
+                            imgui.PushFont(UI.Font[15].Bold)
+                            imgui.SetCursorPos(imgui.ImVec2(515, bindSize.y / 2 - imgui.GetFontSize() / 2 - 10))
+                            UI.Components.PageNav:Draw("bind-" .. index, imgui.new.int(1), { "Удержание", "Переключение"})
+
+                            local keysText = "Shift + Backspace"
+                            local keysTextSize = imgui.CalcTextSize(keysText)
+                            local keysButtonSize = style.FramePadding + keysTextSize + style.FramePadding
+                            imgui.SetCursorPos(imgui.ImVec2(bindSize.x - keysButtonSize.x - 15, bindSize.y / 2 - keysButtonSize.y / 2))
+                            imgui.Button(keysText, keysButtonSize)
+                            imgui.PopFont()
+                        end
+                        imgui.EndChild()
+                    end
+                end
+                imgui.PopFont()
+                -- imgui.PopStyleColor()
+                if (imgui.Button("Создать бинд")) then
+                    imgui.OpenPopup("new-bind")
+                end
+
+                if (imgui.BeginPopupModal("new-bind")) then
+                    imgui.EndPopup()
+                end
+            end
         end
         imgui.EndChild()
         

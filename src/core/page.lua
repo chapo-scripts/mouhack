@@ -1,4 +1,6 @@
 ---@class Page
+---@field category Category
+---@field strId string
 ---@field icon string
 ---@field name string
 ---@field items PageItem[]
@@ -24,10 +26,12 @@ local Page = {}
 
 setmetatable(Page, {__call = function(t, ...) return t:new(...) end})
 
+
 ---@param name string
 ---@return Page
 function Page:new(name)
     local instance = {
+        strId = "",
         name = name,
         config = {},
         items = {},
@@ -40,16 +44,19 @@ function Page:InitializeConfig()
     
 end
 
+---@overload fun(self, item: PageItem)
 ---@param type string
 ---@param options table
 ---@param isOption boolean
 function Page:AddItem(type, options, isOption)
+    print("Create item", type, options.label, "for", self.strId)
     options.type = type
     options.uid = ModuleCore:GenerateItemIndex()
     if isOption then
         return options
     end
     table.insert(self.items, options)
+    return options
 end
 
 ---@overload fun(self: Page, event: "loop", callback: fun())

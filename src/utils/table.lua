@@ -11,6 +11,18 @@ function table.includes(table, value)
     return false
 end
 
+---@param table table
+---@param func fun(t: table): boolean
+---@return number?
+function table.findIndex(table, func)
+    for k, v in pairs(table) do
+        if (func(v)) then
+            return k
+        end
+    end
+    return nil
+end
+
 ---@param tbl table
 ---@param indent? number
 ---@return string

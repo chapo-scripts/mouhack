@@ -1,3 +1,3 @@
-local Network = ModuleCore.Category:new("Сеть")
-Network:AddPage(require("modules.network.nops"))
-Network:AddPage(require("modules.network.functions"))
+local Network = ModuleCore.Category:new("raknet", "Сеть")
+Network:AddPage("nops", require("modules.network.nops"))
+Network:AddPage("functions", require("modules.network.functions"))

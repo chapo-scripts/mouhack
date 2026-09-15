@@ -3,6 +3,7 @@
 ---@class SearchResult
 ---@field type SearchResultType
 ---@field path string[]
+---@field label string
 ---@field pathString string
 ---@field pathLower string
 ---@field categoryIndex number
@@ -13,6 +14,7 @@
 ---@field targetOptionUid? number
 ---@field optinIndex? number
 ---@field positions? number[]
+---@field target? Func | Page | Category
 
 local Search = {
     hightlight = {},
@@ -42,14 +44,17 @@ local searchResultType = {
 }
 
 function Search:Init()
+    ---@param label string
     ---@param type SearchResultType
+    ---@param target Func | Page | Category
     ---@param index number[]
     ---@param path string[]
     ---@param uids? number[]
-    local function pushItem(type, index, path, uids)
+    local function pushItem(label, type, target, index, path, uids)
         if (not uids) then uids = {} end
         local item = {
             type = type,
+            target = target,
             categoryIndex = index[1] or nil,
             pageIndex = index[2] or nil,
             itemIndex = index[3] or nil,
@@ -58,25 +63,26 @@ function Search:Init()
             targetOptionUid = uids[2] or nil,
             path = path,
             pathString = table.concat(path, " > "),
+            label = label
         }
-        item.pathLower = u8(string.toLower(u8:decode(item.pathString)))
+        item.pathLower = u8(string.toLower(u8:decode(item.pathString .. " > " .. item.label)))
         table.insert(self.possibleResults, item)
     end
 
     self.possibleResults = {}
-    for categoryIndex, category in ipairs(ModuleCore.categories) do
+    for categoryIndex, category in ipairs(Categories.list) do
         ---@cast category Category
-        pushItem("category", { categoryIndex }, { category.name })
+        pushItem(category.name, "category", category, { categoryIndex }, { category.name })
         for pageIndex, page in ipairs(category.pages) do
-            pushItem("page", { categoryIndex, pageIndex }, { category.name, page.name })
-            for itemIndex, item in ipairs(page.items) do
+            pushItem(page.name, "page", page, { categoryIndex, pageIndex }, { category.name, page.name })
+            for itemIndex, item in ipairs(page.funcs) do
                 if (not item.noIndexInSearch) then
-                    pushItem("item", { categoryIndex, pageIndex, itemIndex }, { category.name, page.name, item.label }, {item.uid})
+                    pushItem(item.label, "item", item, { categoryIndex, pageIndex, itemIndex }, { category.name, page.name }, {item.uid})
                 end
                 if (item.options) then
                     for optionIndex, option in ipairs(item.options) do
                         if (not option.noIndexInSearch) then
-                            pushItem("option", { categoryIndex, pageIndex, itemIndex, optionIndex }, { category.name, page.name, item.label, option.label }, {item.uid, option.uid})
+                            pushItem(option.label, "option", option, { categoryIndex, pageIndex, itemIndex, optionIndex }, { category.name, page.name, item.label }, {item.uid, option.uid})
                         end
                     end
                 end
@@ -101,7 +107,7 @@ function Search:Find()
     end
     for _, r in ipairs(self.possibleResults) do
 
-        local pathLower = u8(string.toLower(u8:decode(r.pathString)))
+        local pathLower = r.pathLower--u8(string.toLower(u8:decode(r.pathString)))
         local hasFound = pathLower:find(query)
         if (hasFound and (searchIn[0] == 1 or r.type == searchInType[searchIn[0]])) then
             local positions, searchIndex = {}, 1;
@@ -141,11 +147,11 @@ function Search:ShowSearchResult(target)
                 if (target.optionIndex) then
                     -- expand target.itemIndex
                     print("This is item, displaying it...")
-                    UI.Components.Page:ExpandAll(false)
-                    UI.Components.Page:Expand(target.targetItemUid, true)
-                    UI.Components.Page.highlight = { uid = target.targetOptionUid, startedAt = os.clock(), shouldScroll = true }
+                    UI.Components.Page.Item:ExpandAll(false)
+                    UI.Components.Page.Item:Expand(target.targetItemUid, true)
+                    UI.Components.Page.Item.highlight = { uid = target.targetOptionUid, startedAt = os.clock(), shouldScroll = true }
                 else
-                    UI.Components.Page.highlight = { uid = target.targetItemUid, startedAt = os.clock(), shouldScroll = true }
+                    UI.Components.Page.Item.highlight = { uid = target.targetItemUid, startedAt = os.clock(), shouldScroll = true }
                 end
             end
         end
@@ -171,14 +177,14 @@ function Search:DrawSearchInput(width)
 
     imgui.PopStyleColor()
 
-    local sCount = UI.Style:Push(true)
-    imgui.PushFont(UI.Font[15].Bold)
-    imgui.SetCursorPosX(imgui.GetWindowWidth() / 2 - UI.Components.PageNav:GetWidth("search-in") / 2)
-    if (UI.Components.PageNav("search-in", searchIn, { "Везде", "Категории", "Страницы", "Функции", "Параметры" })) then
-        self:Find()
-    end
-    imgui.PopFont()
-    UI.Style:Pop(sCount)
+    -- local sCount = UI.Style:Push(true)
+    -- imgui.PushFont(UI.Font[15].Bold)
+    -- imgui.SetCursorPosX(imgui.GetWindowWidth() / 2 - UI.Components.PageNav:GetWidth("search-in") / 2)
+    -- if (UI.Components.PageNav("search-in", searchIn, { "Везде", "Категории", "Страницы", "Функции", "Параметры" })) then
+    --     self:Find()
+    -- end
+    -- imgui.PopFont()
+    -- UI.Style:Pop(sCount)
 end
 
 ---@param size ImVec2
@@ -201,12 +207,18 @@ function Search:DrawResultsContainer(size)
             local rPos = imgui.GetCursorScreenPos()
             cDrawList:AddRectFilled(rPos, rPos + oneResultSize, imgui.GetColorU32(imgui.Col.FrameBg, Search.anim.progress), 15)
             cDrawList:AddRectFilled(rPos, rPos + oneResultSize, imgui.GetColorU32(imgui.Col.TextDisabled, self.resultsAnim.hover[k].progress), 15)
-            cDrawList:AddText(rPos + imgui.ImVec2(10, 10), imgui.GetColorU32(imgui.Col.Text, Search.anim.progress - 0.5), searchResultType[v.type].icon .. " " .. searchResultType[v.type].label)
+            
+            imgui.PushFont(UI.Font[12].Bold)
+            cDrawList:AddTextFontPtr(UI.Font[15].Bold, 12, rPos + imgui.ImVec2(10, 10), imgui.GetColorU32(imgui.Col.Text, Search.anim.progress - 0.5), v.pathString)
+
+            local itemTypeLabel = searchResultType[v.type].icon .. " " .. searchResultType[v.type].label
+            local itemTypeLabelSize = imgui.CalcTextSize(itemTypeLabel)
+            cDrawList:AddTextFontPtr(UI.Font[15].Bold, 12, rPos + imgui.ImVec2(oneResultSize.x - 10 - itemTypeLabelSize.x, 10), imgui.GetColorU32(imgui.Col.Text, Search.anim.progress - 0.5), itemTypeLabel)
+            imgui.PopFont()
         
         
             imgui.PushFont(UI.Font[15].Bold)
-            -- TODO: Add search hightlight
-            cDrawList:AddTextFontPtr(UI.Font[15].Bold, 15, rPos + imgui.ImVec2(10, 10 + 15 + 5), imgui.GetColorU32(imgui.Col.Text, Search.anim.progress), v.pathString)
+            cDrawList:AddTextFontPtr(UI.Font[15].Bold, 15, rPos + imgui.ImVec2(10, 10 + 15 + 5), imgui.GetColorU32(imgui.Col.Text, Search.anim.progress), v.label)
             imgui.PopFont()
             
             local arrowIcon = faicons("CARET_RIGHT")
@@ -261,7 +273,10 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
         local containerSize = imgui.ImVec2(contentWidth, imgui.GetWindowHeight() - 175)
         imgui.SetCursorPosX(windowSize.x / 2 - contentWidth / 2)
         local sCount = UI.Style:Push(true)
+        local containerPos = imgui.GetCursorScreenPos()
         self:DrawResultsContainer(containerSize)
+        local darkenColor, darkenColorTransparent = imgui.GetColorU32(imgui.Col.PopupBg, 2), imgui.GetColorU32(imgui.Col.PopupBg, 0)
+        imgui.GetForegroundDrawList():AddRectFilledMultiColor(containerPos + imgui.ImVec2(0, containerSize.y - 50), containerPos + containerSize, darkenColorTransparent, darkenColorTransparent, darkenColor, darkenColor)
         UI.Style:Pop(sCount)
         UI.Components.CenterText("Нажмите ESC для выхода",UI.Colors.withAlpha(UI.Colors.Color.Text.vec4, self.anim.progress - 0.5) )
         imgui.PopFont()

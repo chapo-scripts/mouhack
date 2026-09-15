@@ -37,7 +37,7 @@ end
 
 ---@param strId string
 ---@param itemIndex number
----@param item PageItem
+---@param item Func
 function Item:DrawItemControls(strId, itemIndex, item)
     local elementStrId = "##" .. strId .. "-item-" .. itemIndex
     local style = imgui.GetStyle()
@@ -55,35 +55,37 @@ function Item:DrawItemControls(strId, itemIndex, item)
     imgui.SetCursorPosX(winSize.x - paddingFromEnd - itemWidth)
     imgui.SetCursorPosY(winSize.y / 2 - itemHeight / 2)
     imgui.SetNextItemWidth(itemWidth)
-    if (item.type == PageItemType.Toggle) then
-        ---@cast item PageItem.Toggle
+    -- print("Draw ", item.type)
+    if (item.type == FuncType.Toggle) then
+        ---@cast item FuncType.Toggle
         imgui.SetCursorPosX(winSize.x - paddingFromEnd - framePadding.x * 2 - itemHeight * 2)
         imgui.SetCursorPosY(winSize.y / 2 - 20 / 2)
         UI.Components.TggleButton:Draw(elementStrId, item.value, imgui.ImVec2(itemHeight * 2, 20))
-    elseif (item.type == PageItemType.Button) then
-        ---@cast item PageItem.Button
+    elseif (item.type == FuncType.Button) then
+        ---@cast item FuncType.Button
         local buttonText = (item.text or item.label) .. "##" .. item.uid
         local buttonSize = item.size or (imgui.CalcTextSize(buttonText) + framePadding + framePadding)
         imgui.SetCursorPosX(winSize.x - paddingFromEnd - buttonSize.x)
         element = UI.Components.Button(buttonText, buttonSize)
-    elseif (item.type == PageItemType.Text) then
-        ---@cast item PageItem.Text
-    elseif (item.type == PageItemType.NoAction) then
-        ---@cast item PageItem.NoAction
-    elseif (item.type == PageItemType.Selector) then
-        ---@cast item PageItem.Selector
-    elseif (item.type == PageItemType.Combo) then
-        ---@cast item PageItem.Combo
+        
+    elseif (item.type == FuncType.Text) then
+        ---@cast item FuncType.Text
+    elseif (item.type == FuncType.NoAction) then
+        ---@cast item FuncType.NoAction
+    elseif (item.type == FuncType.Selector) then
+        ---@cast item FuncType.Selector
+    elseif (item.type == FuncType.Combo) then
+        ---@cast item FuncType.Combo
         element = imgui.ComboStr(elementStrId, item.value, table.concat(item.items, "\0") .. "\0")
-    elseif (item.type == PageItemType.Frame) then
-        ---@cast item PageItem.Frame
-    elseif (item.type == PageItemType.Input) then
-        ---@cast item PageItem.Input
+    elseif (item.type == FuncType.Frame) then
+        ---@cast item FuncType.Frame
+    elseif (item.type == FuncType.Input) then
+        ---@cast item FuncType.Input
         element = imgui.InputTextWithHint(elementStrId, item.hint or "", item.value, ffi.sizeof(item.value), item.flags or 0)
-    elseif (item.type == PageItemType.InputInt) then
-        ---@cast item PageItem.InputInt
-    elseif (item.type == PageItemType.TextArea) then
-        ---@cast item PageItem.TextArea
+    elseif (item.type == FuncType.InputInt) then
+        ---@cast item FuncType.InputInt
+    elseif (item.type == FuncType.TextArea) then
+        ---@cast item FuncType.TextArea
         imgui.InputTextWithHint(elementStrId, item.hint or "", item.value, ffi.sizeof(item.value), item.flags or 0)
         if (imgui.IsItemClicked(0)) then
             imgui.OpenPopup(elementStrId .. "-popup")
@@ -100,28 +102,29 @@ function Item:DrawItemControls(strId, itemIndex, item)
             element = imgui.InputTextMultiline(elementStrId, item.value, ffi.sizeof(item.value), size - imgui.ImVec2(30, imgui.GetCursorPosY()))
             imgui.EndPopup()
         end
-    elseif (item.type == PageItemType.Checkbox) then
-        ---@cast item PageItem.Checkbox
+    elseif (item.type == FuncType.Checkbox) then
+        ---@cast item FuncType.Checkbox
         imgui.SetCursorPosX(winSize.x - paddingFromEnd - framePadding.x * 2 - fontSize)
         element = imgui.Checkbox(elementStrId, item.value)
-    elseif (item.type == PageItemType.Color) then
-        ---@cast item PageItem.Color
-    elseif (item.type == PageItemType.SliderFloat) then
-        ---@cast item PageItem.SliderFloat
+    elseif (item.type == FuncType.Color) then
+        ---@cast item FuncType.Color
+    elseif (item.type == FuncType.SliderFloat) then
+        ---@cast item FuncType.SliderFloat
         element = imgui.SliderFloat(elementStrId, item.value, item.min, item.max, item.format or "%0.1f")
-    elseif (item.type == PageItemType.SliderInt) then
-        ---@cast item PageItem.SliderInt
+    elseif (item.type == FuncType.SliderInt) then
+        ---@cast item FuncType.SliderInt
         element = imgui.SliderInt(elementStrId, item.value, item.min, item.max, item.format or "%0.1f")
     end
 
     if (element) then
         call("onClick")
+        call("onChange")
     end
     --[[
-    if (item.type == PageItemType.Toggle) then
+    if (item.type == FuncType.Toggle) then
             imgui.SetCursorPos(imgui.ImVec2(itemSize.x - 40 - 15, itemSize.y / 2 - 10))
             UI.Components.TggleButton(item.label, item.value, imgui.ImVec2(40, 20))
-        elseif (item.type == PageItemType.Button) then
+        elseif (item.type == FuncType.Button) then
             local size = item.size or imgui.CalcTextSize(item.text) + style.FramePadding + style.FramePadding
             imgui.SetCursorPos(imgui.ImVec2(itemSize.x - size.x - 15, itemSize.y / 2 - size.y / 2))
             -- imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(1, 1, 0, 1))
@@ -129,7 +132,7 @@ function Item:DrawItemControls(strId, itemIndex, item)
                 item.onClick()
             end
             -- imgui.PopStyleColor()
-        elseif (item.type == PageItemType.Input) then
+        elseif (item.type == FuncType.Input) then
             local inputHeight = imgui.GetFontSize() + style.FramePadding.y * 2
             local inputWidth = item.width or 40
             imgui.SetCursorPos(imgui.ImVec2(itemSize.x - inputWidth - 15, itemSize.y / 2 - inputHeight / 2))
@@ -139,32 +142,32 @@ function Item:DrawItemControls(strId, itemIndex, item)
                     item.onChange()
                 end
             end
-        elseif (item.type == PageItemType.NoAction) then
+        elseif (item.type == FuncType.NoAction) then
             -- No action
-        elseif (item.type == PageItemType.InputInt) then
+        elseif (item.type == FuncType.InputInt) then
 
-        elseif (item.type == PageItemType.TextArea) then
+        elseif (item.type == FuncType.TextArea) then
 
-        elseif (item.type == PageItemType.Checkbox) then
-            ---@cast item PageItem.Checkbox
+        elseif (item.type == FuncType.Checkbox) then
+            ---@cast item FuncType.Checkbox
             local elementSize = style.FramePadding * 2 + imgui.ImVec2(imgui.GetFontSize(), imgui.GetFontSize())
             imgui.SetCursorPos(imgui.ImVec2(itemSize.x - elementSize.x - 15, itemSize.y / 2 - elementSize.y / 2))
             imgui.Checkbox("##" .. item.label, item.value)
-        elseif (item.type == PageItemType.Color) then
-        elseif (item.type == PageItemType.Selector) then
-            ---@cast item PageItem.Selector
+        elseif (item.type == FuncType.Color) then
+        elseif (item.type == FuncType.Selector) then
+            ---@cast item FuncType.Selector
             local currentItem = item.items[item.value[0] + 1]
             local currentItemSize = imgui.CalcTextSize(currentItem)
             local elementSize = style.FramePadding * 2 + imgui.ImVec2(currentItemSize.x, imgui.GetFontSize())
             UI.Components.Selector("selector-" .. strId, elementSize, currentItemSize.x, item.value, item.items)
-        elseif (item.type == PageItemType.Combo) then
-            ---@cast item PageItem.Combo
+        elseif (item.type == FuncType.Combo) then
+            ---@cast item FuncType.Combo
             local width = item.width or 100
             imgui.SetCursorPosX(itemSize.x - 20 - width)
             imgui.SetNextItemWidth(width)
             imgui.ComboStr("##combo-" .. strId, item.value, table.concat(item.items, "\0") .. "\0")
-        elseif (item.type == PageItemType.SliderFloat) then
-            ---@cast item PageItem.SliderFloat
+        elseif (item.type == FuncType.SliderFloat) then
+            ---@cast item FuncType.SliderFloat
             local width = item.width or 100
             imgui.SetCursorPosX(itemSize.x - 20 - width)
             imgui.SetNextItemWidth(width)
@@ -217,9 +220,10 @@ end
 ---@param drawList ImDrawList
 ---@param bgDrawList ImDrawList
 ---@param itemIndex number
----@param item PageItem
+---@param item Func
 ---@param optionIndex? number
 function Item:Draw(page, drawList, bgDrawList, itemIndex, item, optionIndex)
+    for k, v in ipairs(item) do print(k, v) end
     local isOption = optionIndex ~= nil
     local drawList = imgui.GetWindowDrawList()
     local strId = "item-" .. item.uid
@@ -240,7 +244,7 @@ function Item:Draw(page, drawList, bgDrawList, itemIndex, item, optionIndex)
     if (itemIndex == 1) then
         roundFlags = roundFlags + 1 + 2
     end
-    if (itemIndex == #page.items and not self.anim[strId].expanded) then
+    if (itemIndex == #page.funcs and not self.anim[strId].expanded) then
         roundFlags = roundFlags + 4 + 8
     end
     
@@ -286,7 +290,7 @@ function Item:Draw(page, drawList, bgDrawList, itemIndex, item, optionIndex)
         imgui.SameLine()
 
         if (item.onFrame) then
-            item.onFrame(drawList)
+            item.onFrame()
         end
     end
     imgui.EndChild()

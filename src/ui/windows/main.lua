@@ -83,7 +83,8 @@ imgui.OnFrame(
             
             -- Category navigation
             imgui.SetCursorPosY(100)
-            UI.Components.Nav(drawList, pos, imgui.ImVec2(leftWidth, size.y - 100), ModuleCore.categories)
+            -- for k, v in pairs(ModuleCore.categoriesLabels) do print(k, v) end
+            UI.Components.Nav(drawList, pos, imgui.ImVec2(leftWidth, size.y - 100), Categories.labels)
             local currentCategoryIndex = UI.Components.Nav.currentTab
 
             imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(10, 10))
@@ -92,17 +93,18 @@ imgui.OnFrame(
                 if (not UI.pageNavigation[currentCategoryIndex]) then
                     UI.pageNavigation[currentCategoryIndex] = imgui.new.int(1)
                 end
-                local currentCategory = ModuleCore.categories[currentCategoryIndex]
+                local currentCategory = Categories.list[currentCategoryIndex]
+                -- for k, v in pairs(currentCategory.pagesLabels) do print(k, v) end
                 local pageNameStrId = "pagenav-category:" .. currentCategoryIndex
                 if (currentCategory) then
-                    if (#currentCategory.pages > 1) then
+                    -- if (#currentCategory.pages > 1) then
                         local count = UI.Style:Push(true)
                         imgui.PushFont(UI.Font[15].Bold)
                         imgui.SetCursorPos(imgui.ImVec2(imgui.GetWindowWidth() / 2 - UI.Components.PageNav:GetWidth(pageNameStrId) / 2, 10))
                         UI.Components.PageNav(pageNameStrId, UI.pageNavigation[UI.selected.category], currentCategory.pagesLabels)
                         imgui.PopFont()
                         UI.Style:Pop(count)
-                    end
+                    -- end
                     
                     local pageSize = imgui.GetWindowSize() - imgui.ImVec2(15 + 5, imgui.GetCursorPosY())
                     local pageAnimationState = UI.Components.PageNav:GetAnimationState(pageNameStrId)
@@ -114,6 +116,9 @@ imgui.OnFrame(
                         -- bgDrawList:PushClipRect(pagePos, pagePos + pageSize) ---@diagnostic disable-line
                         local styleVarsCount = UI.Style:Push(false)
                         UI.Components.Page(pageSize, drawList, pageIndex, page, currentCategory)
+                        -- for k, v in pairs(page.funcs) do
+                        --     imgui.Text(v.label)
+                        -- end
                         UI.Style:Pop(styleVarsCount)
                         -- pageDrawList:PopClipRect() ---@diagnostic disable-line
                         -- bgDrawList:PopClipRect() ---@diagnostic disable-line

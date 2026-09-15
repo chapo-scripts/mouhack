@@ -1,10 +1,13 @@
 local Item = require("ui.components.page.item")
 
+local PageComponent = {
+    Item = Item,
+}
 ---@param size ImVec2
 ---@param drawList ImDrawList
 ---@param pageIndex number
 ---@param page Page
-return function(size, drawList, pageIndex, page, category)
+function PageComponent:Draw(size, drawList, pageIndex, page, category)
     local currentCategoryIndex = UI.Components.Nav.currentTab
     local fgdl = imgui.GetForegroundDrawList()
     local p = imgui.GetCursorScreenPos()
@@ -16,11 +19,14 @@ return function(size, drawList, pageIndex, page, category)
     imgui.PushStyleVarVec2(imgui.StyleVar.ItemSpacing, imgui.ImVec2(0, 0))
     if (imgui.BeginChild("page-container-" .. pageIndex, size, true)) then
         imgui.PushFont(UI.Font[15].Bold)
-        for itemIndex, item in ipairs(page.items) do
+        for itemIndex, item in ipairs(page.funcs) do
             Item:Draw(page, drawList, bgDrawList, itemIndex, item, nil)
+            -- imgui.Text(tostring(item.label or "NULL"))
         end
         imgui.PopFont()
     end
     imgui.EndChild()
     imgui.PopStyleVar(2)
 end
+
+return setmetatable(PageComponent, { __call = PageComponent.Draw })

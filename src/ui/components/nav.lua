@@ -18,7 +18,7 @@ end
 ---@param drawList ImDrawList
 ---@param pos ImVec2
 ---@param size ImVec2
----@param items Category[]
+---@param items string[]
 function Nav:Draw(drawList, pos, size, items, selected)
     local newCategory
     self.anim.progress = Utils.bringFloatTo(self.anim.progress, self.anim.current, self.anim.updatedAt, 1)
@@ -50,12 +50,12 @@ function Nav:Draw(drawList, pos, size, items, selected)
             end
             self.anim.hover[k].current = Utils.bringFloatTo(self.anim.hover[k].current, self.anim.hover[k].hovered and 1 or 0, self.anim.hover[k].updatedAt, 1)
 
-            local labelSize, iconSize = imgui.CalcTextSize(v.name), imgui.CalcTextSize(faicons("PERSON_WALKING"))
+            local labelSize, iconSize = imgui.CalcTextSize(v), imgui.CalcTextSize(faicons("PERSON_WALKING"))
             local p = imgui.GetCursorScreenPos()
             local labelPos = p + imgui.ImVec2(oneItemSize.x / 2 - labelSize.x / 2, oneItemSize.y / 2 - labelSize.y / 2)
             -- drawList:AddTextFontPtr(UI.Font[20].Bold, 20, p + imgui.ImVec2(25, oneItemSize.y / 2 - labelSize.y / 2), 0xFFffffff, faicons("PERSON_WALKING"))
-            drawList:AddTextFontPtr(UI.Font[20].Bold, 20, labelPos, UI.Colors.withAlpha(UI.Colors.Color.Text.u32, self.anim.hover[k].current + 0.5), v.name)
-            if imgui.InvisibleButton(v.name, oneItemSize) then
+            drawList:AddTextFontPtr(UI.Font[20].Bold, 20, labelPos, UI.Colors.withAlpha(UI.Colors.Color.Text.u32, self.anim.hover[k].current + 0.5), v)
+            if imgui.InvisibleButton(v, oneItemSize) then
                 self:SwitchTo(k)
                 self.currentTab = k
             end

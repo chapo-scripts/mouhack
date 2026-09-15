@@ -1,74 +1,53 @@
 ---@class Page
----@field category Category
+---@field uid number
 ---@field strId string
----@field icon string
 ---@field name string
----@field items PageItem[]
+---@field funcs Func[]
+---@field handlers table<string, function[]>
 ---@field config table<string, unknown>
----@field handlers table<string, function>
----@field new fun(self: Page, name: string): Page
----@field AddItem fun(self: Page, type: "toggle", options: PageItem.Toggle, isOption?: boolean)
----@field AddItem fun(self: Page, type: "button", options: PageItem.Button, isOption?: boolean)
----@field AddItem fun(self: Page, type: "text", options: PageItem.Text, isOption?: boolean)
----@field AddItem fun(self: Page, type: "no_action", options: PageItem.NoAction, isOption?: boolean)
----@field AddItem fun(self: Page, type: "selector", options: PageItem.Selector, isOption?: boolean)
----@field AddItem fun(self: Page, type: "combo", options: PageItem.Combo, isOption?: boolean)
----@field AddItem fun(self: Page, type: "frame", options: PageItem.Frame, isOption?: boolean)
----@field AddItem fun(self: Page, type: "input", options: PageItem.Input, isOption?: boolean)
----@field AddItem fun(self: Page, type: "input_int", options: PageItem.InputInt, isOption?: boolean)
----@field AddItem fun(self: Page, type: "textarea", options: PageItem.TextArea, isOption?: boolean)
----@field AddItem fun(self: Page, type: "checkbox", options: PageItem.Checkbox, isOption?: boolean)
----@field AddItem fun(self: Page, type: "color", options: PageItem.Color, isOption?: boolean)
----@field AddItem fun(self: Page, type: "slider_float", options: PageItem.SliderFloat, isOption?: boolean)
----@field AddItem fun(self: Page, type: "slider_int", options: PageItem.SliderInt, isOption?: boolean)
-
+---@field parentPage? Page
 local Page = {}
 
-setmetatable(Page, {__call = function(t, ...) return t:new(...) end})
+---@overload fun(self: Page, func: fun(page: Page): Func)
+---@overload fun(self: Page, func: fun(page: Page))
+---@param func Func
+function Page:AddFunc(func)
+    if (type(func) == "function") then
+        func = func(self)
+    end
+    if (func) then
+        func.parentPage = self
+        table.insert(self.funcs, func)
+        return #self.funcs
+    end
+end
 
+function Page:On(event, callback)
+    -- print("Registering callback for", event, debug.traceback())
+    if (not self.handlers[event]) then
+        self.handlers[event] = {}
+    end
+    table.insert(self.handlers[event], callback)
+end
 
----@param name string
----@return Page
-function Page:new(name)
+---@class Pages
+---@field list Page[]
+---@field new fun(self, strId: string, name: string): Page
+Pages = {
+    list = {}
+}
+
+function Pages:new(strId, name, parentCategory)
     local instance = {
-        strId = "",
+        uid = #self.list + 1,
+        strId = strId,
         name = name,
+        funcs = {},
+        handlers = {},
         config = {},
-        items = {},
-        handlers = {}
+        parentCategory = parentCategory
     }
-    return setmetatable(instance, {__index = self})
+    local newPage = setmetatable(instance, { __index = Page })
+    table.insert(self.list, newPage)
+    return newPage
 end
-
-function Page:InitializeConfig()
-    
-end
-
----@overload fun(self, item: PageItem)
----@param type string
----@param options table
----@param isOption boolean
-function Page:AddItem(type, options, isOption)
-    print("Create item", type, options.label, "for", self.strId)
-    options.type = type
-    options.uid = ModuleCore:GenerateItemIndex()
-    if isOption then
-        return options
-    end
-    table.insert(self.items, options)
-    return options
-end
-
----@overload fun(self: Page, event: "loop", callback: fun())
-function Page:on(event, callback)
-    self.handlers[event] = callback
-end
-
-function Page:Call(event, ...)
-    if self.handlers[event] then
-        self.handlers[event](self, ...)
-    end
-end
-
----@cast Page Page
-return Page

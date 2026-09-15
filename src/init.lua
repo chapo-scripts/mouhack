@@ -26,15 +26,19 @@ function main()
     sampRegisterChatCommand("mh", function()
         MainWindowState[0] = not MainWindowState[0]
     end)
+
+    Core:EmitAllPages("sampLoaded")
     while (true) do
         wait(0)
         UI.Blink:Update()
         
+        Core:EmitAllPages("loop")
         -- WIP
-        for k, v in ipairs(ModuleCore.categories) do
-            for _, p in ipairs(v.pages) do
-                p:Call("loop")
-            end
-        end
+        -- for k, v in ipairs(ModuleCore.list.category) do
+        --     for _, p in ipairs(v.pages) do
+        --         p:Emit("loop")
+        --         -- print(p.strId, #p.items.list)
+        --     end
+        -- end
     end
 end

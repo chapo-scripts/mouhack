@@ -1,106 +1,108 @@
----@meta
+---@alias Func
+---| FuncType.Toggle
+---| FuncType.InputInt
+---| FuncType.SliderFloat
+---| FuncType.Button
+---| FuncType.Combo
+---| FuncType.Frame
+---| FuncType.Color
+---| FuncType.SliderInt
+---| FuncType.Input
+---| FuncType.Checkbox
+---| FuncType.TextArea
+---| FuncType.Selector
+---| FuncType.NoAction
+---| FuncType.Text
 
----@enum PageItemType
-PageItemType = {
-    Toggle = "toggle",
-    Button = "button",
-    Text = "text",
-    NoAction = "no_action",
-    Selector = "selector",
-    Combo = "combo",
-    Frame = "frame",
-    Input = "input",
-    InputInt = "input_int",
-    TextArea = "textarea",
-    Checkbox = "checkbox",
-    Color = "color",
-    SliderFloat = "slider_float",
-    SliderInt = "slider_int"
-}
-
----@class PageItem.Properties
----@field label string
----@field type? PageItemType
+---@class FuncBase
 ---@field uid? number
----@field description? string
----@field options? PageItem[]
----@field unsafe? string|boolean
+---@field type? Func
 ---@field noIndexInSearch? boolean
----@field onClick? fun()
----@field onFrame? fun(drawList: ImDrawList)
+---@field options? Func[]
+---@field tags? {icon: string, text: string}[]
+---@field label string
+---@field description? string
+---@field unsafe? string | boolean
+---@field isOption? boolean
+---@field onChanged? fun()
+---@field onFrame? fun()
+    
 
----@class PageItem.NoAction : PageItem.Properties
-
----@class PageItem.Toggle : PageItem.Properties
+---@class FuncType.Toggle : FuncBase
 ---@field value mimgui.bool
 
----@class PageItem.Button : PageItem.Properties
----@field text? string
----@field size? ImVec2
-
----@class PageItem.Text : PageItem.Properties
----@field text string
-
----@class PageItem.Combo : PageItem.Properties
----@field value mimgui.int
----@field items string[]
----@field width? number
-
----@class PageItem.Selector : PageItem.Properties
----@field value mimgui.int
----@field items string[]
-
----@class PageItem.Input : PageItem.Properties
+---@class FuncType.InputInt : FuncBase
+---@field flags number?
+---@field width number?
+---@field hint string?
 ---@field value mimgui.char
----@field onChange? fun()
----@field hint? string
----@field width? number
----@field flags? number
 
----@class PageItem.Color : PageItem.Properties
----@field value mimgui.float[]
----@field flags? number
-
----@class PageItem.InputInt : PageItem.Properties
----@field value mimgui.int
-
----@class PageItem.TextArea : PageItem.Input
-
----@class PageItem.Checkbox : PageItem.Properties
----@field value mimgui.bool
-
----@class PageItem.Frame : PageItem.Properties
----@field value mimgui.int
----@field onChange? fun()
----@field width? number
----@field flags? number
-
----@class PageItem.SliderFloat : PageItem.Properties
+---@class FuncType.SliderFloat : FuncBase
+---@field max number
+---@field format string?
 ---@field value mimgui.float
 ---@field min number
----@field max number
----@field width? number
----@field format? string
+---@field width number?
 
----@class PageItem.SliderInt : PageItem.Properties
+---@class FuncType.Button : FuncBase
+---@field size ImVec2?
+---@field text string?
+
+---@class FuncType.Combo : FuncBase
+---@field items string[]
+---@field width number?
 ---@field value mimgui.int
----@field min number
----@field max number
----@field width? number
----@field format? string
 
----@alias PageItem
----| PageItem.Toggle
----| PageItem.Button
----| PageItem.Text
----| PageItem.NoAction
----| PageItem.Selector
----| PageItem.Combo
----| PageItem.Frame
----| PageItem.Input
----| PageItem.InputInt
----| PageItem.TextArea
----| PageItem.Checkbox
----| PageItem.Color
----| PageItem.SliderFloat
----| PageItem.SliderInt
+---@class FuncType.Frame : FuncBase
+
+---@class FuncType.Color : FuncBase
+---@field flags number?
+---@field value mimgui.float[4]
+
+---@class FuncType.SliderInt : FuncBase
+---@field max number
+---@field format string?
+---@field value mimgui.float
+---@field min number
+---@field width number?
+
+---@class FuncType.Input : FuncBase
+---@field flags number?
+---@field width number?
+---@field hint string?
+---@field value mimgui.char
+
+---@class FuncType.Checkbox : FuncBase
+---@field value mimgui.bool
+
+---@class FuncType.TextArea : FuncBase
+---@field width number?
+---@field hint string?
+---@field value mimgui.char
+
+---@class FuncType.Selector : FuncBase
+---@field items string[]
+---@field width number?
+---@field value mimgui.int
+
+---@class FuncType.NoAction : FuncBase
+
+---@class FuncType.Text : FuncBase
+---@field text string
+
+---@class Funcs
+---@field list Func[]
+---@field new fun(self: Funcs, type: "Toggle",  options: FuncType.Toggle): Func
+---@field new fun(self: Funcs, type: "InputInt",  options: FuncType.InputInt): Func
+---@field new fun(self: Funcs, type: "SliderFloat",  options: FuncType.SliderFloat): Func
+---@field new fun(self: Funcs, type: "Button",  options: FuncType.Button): Func
+---@field new fun(self: Funcs, type: "Combo",  options: FuncType.Combo): Func
+---@field new fun(self: Funcs, type: "Frame",  options: FuncType.Frame): Func
+---@field new fun(self: Funcs, type: "Color",  options: FuncType.Color): Func
+---@field new fun(self: Funcs, type: "SliderInt",  options: FuncType.SliderInt): Func
+---@field new fun(self: Funcs, type: "Input",  options: FuncType.Input): Func
+---@field new fun(self: Funcs, type: "Checkbox",  options: FuncType.Checkbox): Func
+---@field new fun(self: Funcs, type: "TextArea",  options: FuncType.TextArea): Func
+---@field new fun(self: Funcs, type: "Selector",  options: FuncType.Selector): Func
+---@field new fun(self: Funcs, type: "NoAction",  options: FuncType.NoAction): Func
+---@field new fun(self: Funcs, type: "Text",  options: FuncType.Text): Func

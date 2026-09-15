@@ -1,44 +1,41 @@
----@global
 ---@class Category
+---@field uid number
 ---@field strId string
 ---@field name string
 ---@field pages Page[]
 ---@field pagesLabels string[]
----@field new fun(self, strId: string, name: string): Category
----@field AddPage fun(self: Category, strId: string, page: Page)
-
+---@field parentCategory? Category
 local Category = {}
 
----@param strId string
----@param name string
----@return Category
-function Category:new(strId, name)
-    assert(strId and name, "Invalid category strId or name")
-    local id = #ModuleCore.categories + 1
+function Category:Print(...)
+    print('[CATEGORY]', self.uid, self.strId, self.name, "=>", ...)
+end
+
+---@return Page
+function Category:AddPage(strId, name)
+    local page = Pages:new(strId, name, self)
+    table.insert(self.pages, page)
+    table.insert(self.pagesLabels, name)
+    return page
+end
+
+---@class Categories
+Categories = {
+    list = {},
+    labels = {}
+}
+
+function Categories:new(strId, name)
     local instance = {
-        id = id,
+        uid = #self.list + 1,
         strId = strId,
         name = name,
         pages = {},
         pagesLabels = {}
-    };
-    local new = setmetatable(instance, {__index = self})
-    table.insert(ModuleCore.categories, new)
-    ModuleCore.index.category[strId] = #ModuleCore.categories
-    return new
+    }
+    local newCategory = setmetatable(instance, { __index = Category })
+    table.insert(self.list, newCategory)
+    table.insert(self.labels, name)
+    print("Categories->new:", strId, name)
+    return newCategory
 end
-
----@param strId string
----@param page Page
-function Category:AddPage(strId, page)
-    page.strId = strId
-    page.category = self
-    print("ADDPAGE", strId, page)
-    for k, v in pairs(page) do print(k, v) end
-    table.insert(self.pagesLabels, page.name or strId)
-    table.insert(self.pages, page)
-    ModuleCore.index.page[strId] = #self.pages
-end
-
----@cast Category Category
-return Category

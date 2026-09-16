@@ -17,7 +17,10 @@
 ---@class FuncBase
 ---@field uid? number
 ---@field type? Func
+---@field width? number
+---@field height? number
 ---@field noIndexInSearch? boolean
+---@field notBindable? boolean
 ---@field options? Func[]
 ---@field tags? {icon: string, text: string}[]
 ---@field label string
@@ -26,6 +29,7 @@
 ---@field isOption? boolean
 ---@field onChanged? fun()
 ---@field onFrame? fun()
+---@field parentPage? Page
     
 
 ---@class FuncType.Toggle : FuncBase

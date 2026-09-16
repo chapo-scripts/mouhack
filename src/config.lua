@@ -1,3 +1,4 @@
+local imgui = require("mimgui")
 CONFIG_PATH = BASE_PATH .. "\\config\\" .. thisScript().name .. ".json"
 Config = {
     scriptFileName = imgui.new.char[128](""),
@@ -7,7 +8,7 @@ Config = {
         cheat = imgui.new.char[16]("")
     },
 
-    ---@type {categoryStrId: Category, pageStrId: Page, itemStrId: PageItem, hotkey?: { enabled: boolean, id: number, keys: number[], callback: function, mode: mimgui.int }}[]
+    ---@type {path: string, keys: number[], state: boolean, useHold: boolean}[]
     binds = {
         
     },

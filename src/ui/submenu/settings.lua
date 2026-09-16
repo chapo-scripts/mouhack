@@ -71,45 +71,52 @@ function Settings:Draw(windowPos, windowSize, bgDrawList)
                 local bindSize = imgui.ImVec2(size.x - 30, 50)
                 local drawList = imgui.GetWindowDrawList()
                 local style = imgui.GetStyle()
-                for index, r in ipairs(UI.SubMenu.Search.possibleResults) do
-                    if (r.type == "item" or r.type == "option") then
-                        if (r.target.type == FuncType.Button or r.target.type == FuncType.Toggle) then
-                            local p = imgui.GetCursorScreenPos()
-                            drawList:AddRectFilled(p, p + bindSize, UI.Colors.withAlpha(UI.Colors.Color.First.u32, self.anim.progress), 10)
-                            
-                            if (imgui.BeginChild("bind-" .. index, bindSize, true, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)) then
-                                imgui.PushFont(UI.Font[15].Bold)
-                                
-                                local checkboxSize = imgui.GetFontSize() + style.FramePadding.y * 2
-                                imgui.SetCursorPosY(bindSize.y / 2 - checkboxSize / 2)
-                                imgui.Checkbox("##bind-enable-" .. index, imgui.new.bool(true))
-
-                                imgui.SetCursorPos(imgui.ImVec2(style.WindowPadding.x * 2 + checkboxSize, bindSize.y / 2 - imgui.CalcTextSize(r.pathString, nil, nil, 500).y / 2))
-                                -- imgui.TextDisabled(("%s %s %s %s"):format("Персонаж", faicons("CARET_RIGHT"), "Передвижение", faicons("CARET_RIGHT")))
-                                imgui.PushTextWrapPos(500)
-                                imgui.TextDisabled(r.pathString)
-                                imgui.SameLine()
-                                imgui.Text(r.label)
-                                imgui.PopTextWrapPos()
-                                imgui.PopFont()
-                                
-                                imgui.PushFont(UI.Font[15].Bold)
-
-                                if (r.target.type == FuncType.Toggle) then
-                                    imgui.SetCursorPos(imgui.ImVec2(515, bindSize.y / 2 - imgui.GetFontSize() / 2 - 10))
-                                    UI.Components.PageNav:Draw("bind-" .. index, imgui.new.int(1), { "Удержание", "Переключение"})
-                                end
-
-                                local keysText = "Shift + Backspace"
-                                local keysTextSize = imgui.CalcTextSize(keysText)
-                                local keysButtonSize = style.FramePadding + keysTextSize + style.FramePadding
-                                imgui.SetCursorPos(imgui.ImVec2(bindSize.x - keysButtonSize.x - 15, bindSize.y / 2 - keysButtonSize.y / 2))
-                                imgui.Button(keysText, keysButtonSize)
-                                imgui.PopFont()
+                for index, bind in ipairs(Config.binds) do
+                    
+                    local p = imgui.GetCursorScreenPos()
+                    drawList:AddRectFilled(p, p + bindSize, UI.Colors.withAlpha(UI.Colors.Color.First.u32, self.anim.progress), 10)
+                    
+                    if (imgui.BeginChild("bind-" .. index, bindSize, true, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)) then
+                        imgui.PushFont(UI.Font[15].Bold)
+                        
+                        local checkboxSize = imgui.GetFontSize() + style.FramePadding.y * 2
+                        imgui.SetCursorPosY(bindSize.y / 2 - checkboxSize / 2)
+                        if (bind.state ~= nil) then
+                            if (imgui.Checkbox("##bind-enable-" .. index, imgui.new.bool(bind.state))) then
+                                Binds.list[index].state = not bind.state
                             end
-                            imgui.EndChild()
                         end
+
+                        imgui.SetCursorPos(imgui.ImVec2(style.WindowPadding.x * 2 + checkboxSize, bindSize.y / 2 - imgui.CalcTextSize(bind.path, nil, nil, 500).y / 2))
+                        -- imgui.TextDisabled(("%s %s %s %s"):format("Персонаж", faicons("CARET_RIGHT"), "Передвижение", faicons("CARET_RIGHT")))
+                        imgui.PushTextWrapPos(500)
+                        imgui.TextColored(imgui.GetStyle().Colors[bind.state and imgui.Col.Text or imgui.Col.TextDisabled], bind.path)
+                        imgui.PopTextWrapPos()
+                        imgui.PopFont()
+                        
+                        imgui.PushFont(UI.Font[15].Bold)
+
+                        -- if (r.target.type == FuncType.Toggle) then
+                        --     imgui.SetCursorPos(imgui.ImVec2(515, bindSize.y / 2 - imgui.GetFontSize() / 2 - 10))
+                        --     UI.Components.PageNav:Draw("bind-" .. index, imgui.new.int(1), { "Удержание", "Переключение"})
+                        -- end
+
+                        local keysText = Binds:GetKeysLabel(bind.keys)
+                        local keysTextSize = imgui.CalcTextSize(keysText)
+                        local keysButtonSize = style.FramePadding + keysTextSize + style.FramePadding
+                        imgui.SetCursorPos(imgui.ImVec2(bindSize.x - keysButtonSize.x - 15, bindSize.y / 2 - keysButtonSize.y / 2))
+                        -- UI.Components.Button(keysText .. "##bind-index-keys-" .. index, keysButtonSize)
+                        local bindId = Binds.ids[bind.path]
+                        if (bindId) then
+                            -- Hotkey.Draw(bindId)
+                            UI.Components.HotkeyWithWarning(bindId, "Test", keysButtonSize)
+                        else
+                            imgui.TextColored(imgui.ImVec4(1, 0, 0, 1), "ERROR")
+                        end
+                        imgui.PopFont()
+                        DrawHotkeyWarningPopup()
                     end
+                    imgui.EndChild()
                 end
                 imgui.PopFont()
                 -- imgui.PopStyleColor()

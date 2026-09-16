@@ -1,6 +1,4 @@
 ---@diagnostic disable:lowercase-global
-Encoding.default = "CP1251"
-u8 = Encoding.UTF8
 
 UI = {
     Colors = require("ui.colors"),
@@ -23,6 +21,7 @@ UI = {
         ImRotate = require("ui.components.imrotate"),
         TextWithSearch = require("ui.components.text-with-search"),
         Scroller = require("ui.components.scroller"),
+        HotkeyWithWarning = require("ui.components.hotkey-warning"),
     },
     Windows = {
         Main = require("ui.windows.main")
@@ -43,6 +42,7 @@ UI = {
         Init = require("ui.fonts"),
         requiredSizes = { 12, 15, 16, 20, 24, 40, 64 },
         requiredIcons = {
+            "KEYBOARD",
             "MAGNIFYING_GLASS",
             "BOOK",
             "CODE_COMMIT",

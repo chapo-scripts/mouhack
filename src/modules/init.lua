@@ -25,6 +25,7 @@ for _, data in ipairs({
                     require("modules.player.movement.slap"),
                     require("modules.player.movement.freeze"),
                     require("modules.player.movement.teleport"),
+                    require("modules.player.movement.coordmaster"),
                     require("modules.player.movement.airbrake"),
                 }
             },
@@ -129,6 +130,11 @@ for _, data in ipairs({
                 strId = "textdraws",
                 name = "Текстдравы",
                 modules = { require("modules.devtools.textdraws.click"), require("modules.devtools.textdraws.id") }
+            },
+            {
+                strId = "gametexts",
+                name = "Геймтексты",
+                modules = { require("modules.devtools.gametext.print"), require("modules.devtools.gametext.show") }
             }
         }
     }

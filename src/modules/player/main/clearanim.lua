@@ -7,7 +7,7 @@ return function(page)
             clearCharTasksImmediately(PLAYER_PED)
             if (page.config.unfreeze[0]) then
                 local bs = raknetNewBitStream()
-                raknetBitStreamWriteInt8(bs, false)
+                raknetBitStreamWriteInt8(bs, 1)
                 raknetEmulRpcReceiveBitStream(15, bs)
                 raknetDeleteBitStream(bs)
             end

@@ -30,14 +30,17 @@ local function generateFuncTypes()
     for typeKey in pairs(FUNC_TYPE_DATA) do
         table.insert(lines, "---| FuncType." .. typeKey)
     end
-
+    
     -- Types
     table.insert(lines, [[
 
 ---@class FuncBase
 ---@field uid? number
 ---@field type? Func
+---@field width? number
+---@field height? number
 ---@field noIndexInSearch? boolean
+---@field notBindable? boolean
 ---@field options? Func[]
 ---@field tags? {icon: string, text: string}[]
 ---@field label string
@@ -46,6 +49,7 @@ local function generateFuncTypes()
 ---@field isOption? boolean
 ---@field onChanged? fun()
 ---@field onFrame? fun()
+---@field parentPage? Page
     ]])
     
     for typeKey, typeData in pairs(FUNC_TYPE_DATA) do

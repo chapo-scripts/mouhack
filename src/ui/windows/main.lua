@@ -5,7 +5,12 @@ MainWindowState = imgui.new.bool(true)
 local eyeAnim = {
     start = 0,
     y = 0,
-    state = 'in'
+    state = 'in',
+    clicker = {
+        at = 0,
+        count = 0,
+        active = false
+    }
 }
 function eyeAnim.getOffset(dx, dy)
     local size = 4
@@ -17,6 +22,13 @@ end
 ---@param size ImVec2
 local function drawLogo(drawList, pos, size)
     -- drawList = imgui.GetForegroundDrawList()
+    -- if (imgui.IsMouseHoveringRect(pos, pos + size)) then
+    --     eyeAnim.clicker.at = os.clock()
+    --     eyeAnim.clicker.clicks = eyeAnim.clicker.clicks + 1
+    --     if (eyeAnim.clicker.clicks >= 5) then
+    --         eyeAnim.clicker.active = true
+    --     end
+    -- end
     drawList:AddImage(UI.Texture.logo, pos, pos + size)
     -- Logo eye
     local eyeOffset = imgui.ImVec2(0, 70);
@@ -94,6 +106,11 @@ imgui.OnFrame(
                     UI.pageNavigation[currentCategoryIndex] = imgui.new.int(1)
                 end
                 local currentCategory = Categories.list[currentCategoryIndex]
+                imgui.PushFont(UI.Font[15].Bold)
+                for k, v in ipairs(Categories.list) do
+                    UI.Components.PageNav:Preload("pagenav-category:" .. k, v.pagesLabels)
+                end
+                imgui.PopFont()
                 -- for k, v in pairs(currentCategory.pagesLabels) do print(k, v) end
                 local pageNameStrId = "pagenav-category:" .. currentCategoryIndex
                 if (currentCategory) then

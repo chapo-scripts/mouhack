@@ -17,7 +17,8 @@ function PageComponent:Draw(size, drawList, pageIndex, page, category)
 
     imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(0, 0))
     imgui.PushStyleVarVec2(imgui.StyleVar.ItemSpacing, imgui.ImVec2(0, 0))
-    if (imgui.BeginChild("page-container-" .. pageIndex, size, true)) then
+    if (imgui.BeginChild("page-container-" .. pageIndex, size, true, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)) then
+        UI.Components.Scroller("page-scroller-" .. pageIndex, 150, 150)
         imgui.PushFont(UI.Font[15].Bold)
         for itemIndex, item in ipairs(page.funcs) do
             Item:Draw(page, drawList, bgDrawList, itemIndex, item, nil)

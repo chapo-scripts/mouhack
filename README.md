@@ -1,14 +1,4 @@
-# Template project for moonly
-## Функции
-### Персонаж
-#### Передвижение
-* Infinity Run
-* AirBrake
-* ClickWarp
-#### Оружие
-* ExtraWS
-### Транспорт
-
+# Mou(jeek's)Hack
 
 ## Building
 1. Install **[moonly-cli](https://github.com/themusaigen/moonly-command-tool)**

@@ -14,6 +14,7 @@ end
 ---@return Page
 function Category:AddPage(strId, name)
     local page = Pages:new(strId, name, self)
+    page.parentCategory = self
     table.insert(self.pages, page)
     table.insert(self.pagesLabels, name)
     return page

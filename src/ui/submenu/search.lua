@@ -1,20 +1,6 @@
 ---@alias SearchResultType "category"|"page"|"item"|"option"
 
----@class SearchResult
----@field type SearchResultType
----@field path string[]
----@field label string
----@field pathString string
----@field pathLower string
----@field categoryIndex number
----@field pageIndex? number
----@field itemIndex? number
----@field optionIndex? number
----@field targetItemUid? number
----@field targetOptionUid? number
----@field optinIndex? number
----@field positions? number[]
----@field target? Func | Page | Category
+
 
 local Search = {
     hightlight = {},
@@ -28,13 +14,15 @@ local Search = {
     },
     buffer = imgui.new.char[128](""),
     query = "",
-    ---@type SearchResult[]
+    ---@type Listed[]
     searchResults = {},
-    ---@type SearchResult[]
+    ---@type Listed[]
     possibleResults = {},
     ---@type string[]
     possibleResultsCombo = {}
 }
+
+
 
 local searchResultType = {
     category = { label = "Категория", icon = faicons("BOOK") },

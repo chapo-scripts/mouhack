@@ -3,7 +3,9 @@ local PageNav = {
     anim = {},
     ---@type table<string, {totalWidth: number, items: {x: number, width: number, text: ImVec2}[]}>
     sizes = {},
-    animationSpeed = 1
+    animationSpeed = 1,
+    ---@type table<string, boolean>
+    preload = {}
 }
 
 ---@param strId string
@@ -36,6 +38,47 @@ function PageNav:SwitchTo(strId, index)
 end
 
 ---@param strId string
+---@param items string[]
+---@param fixedItemWidth? number
+function PageNav:InitializeComponent(strId, items, fixedItemWidth)
+    local style = imgui.GetStyle()
+    local padding = {
+        outer = style.FramePadding,
+        inner = style.FramePadding + imgui.ImVec2(style.FramePadding.x, 0)
+    }
+    if (not self.sizes[strId]) then
+        self.sizes[strId] = { totalWidth = padding.outer.x * 2, items = {} }
+        local posX = 0
+        for k, v in ipairs(items) do
+            local size = imgui.CalcTextSize(v)
+            local tabWidth = (fixedItemWidth or size.x) + padding.inner.x * 2
+            table.insert(self.sizes[strId].items, {width = tabWidth, x = posX, text = size})
+            self.sizes[strId].totalWidth = self.sizes[strId].totalWidth + tabWidth
+            posX = posX + tabWidth
+        end
+        print("CALC", strId)
+    end
+
+    if (not self.anim[strId]) then
+        self.anim[strId] = {
+            value = 1,
+            current = { index = 1, progress = 1, x = self.sizes[strId].items[1].x, width = self.sizes[strId].items[1].width },
+            to = { index = 1, progress = 1, x = self.sizes[strId].items[1].x, width = self.sizes[strId].items[1].width },
+            updatedAt = 0
+        }
+    end
+end
+
+---@param strId string
+---@param items string[]
+function PageNav:Preload(strId, items, fixedItemWidth)
+    if (self.sizes[strId]) then
+        return
+    end
+    self:InitializeComponent(strId, items, fixedItemWidth)
+end
+
+---@param strId string
 ---@param selected mimgui.int
 ---@param items string[]
 ---@param fixedItemWidth? number
@@ -61,27 +104,10 @@ function PageNav:Draw(strId, selected, items, fixedItemWidth)
         selectorText = imgui.GetColorU32(imgui.Col.Text, alpha)
     }
 
-     if (not self.sizes[strId]) then
-        self.sizes[strId] = { totalWidth = padding.outer.x * 2, items = {} }
-        local posX = 0
-        for k, v in ipairs(items) do
-            local size = imgui.CalcTextSize(v)
-            local tabWidth = (fixedItemWidth or size.x) + padding.inner.x * 2
-            table.insert(self.sizes[strId].items, {width = tabWidth, x = posX, text = size})
-            self.sizes[strId].totalWidth = self.sizes[strId].totalWidth + tabWidth
-            posX = posX + tabWidth
-        end
+    if (not self.sizes[strId]) then
+        self:InitializeComponent(strId, items, fixedItemWidth)
     end
-
-    if (not self.anim[strId]) then
-        self.anim[strId] = {
-            value = selected,
-            current = { index = 1, progress = 1, x = self.sizes[strId].items[1].x, width = self.sizes[strId].items[1].width },
-            to = { index = 1, progress = 1, x = self.sizes[strId].items[1].x, width = self.sizes[strId].items[1].width },
-            updatedAt = 0
-        }
-    end
-
+    
 
     local drawList = imgui.GetWindowDrawList()
     local p = imgui.GetCursorScreenPos()

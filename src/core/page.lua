@@ -5,7 +5,7 @@
 ---@field funcs Func[]
 ---@field handlers table<string, function[]>
 ---@field config table<string, unknown>
----@field parentPage? Page
+---@field parentCategory? Page
 local Page = {}
 
 ---@overload fun(self: Page, func: fun(page: Page): Func)
@@ -32,7 +32,7 @@ end
 
 ---@class Pages
 ---@field list Page[]
----@field new fun(self, strId: string, name: string): Page
+---@field new fun(self, strId: string, name: string, parentCategory?: Category): Page
 Pages = {
     list = {}
 }

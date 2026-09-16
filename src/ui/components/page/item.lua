@@ -65,6 +65,9 @@ function Item:DrawItemControls(strId, itemIndex, item)
         ---@cast item FuncType.Button
         local buttonText = (item.text or item.label) .. "##" .. item.uid
         local buttonSize = item.size or (imgui.CalcTextSize(buttonText) + framePadding + framePadding)
+        if (item.width) then
+            buttonSize.x = item.width
+        end
         imgui.SetCursorPosX(winSize.x - paddingFromEnd - buttonSize.x)
         element = UI.Components.Button(buttonText, buttonSize)
         
@@ -115,6 +118,10 @@ function Item:DrawItemControls(strId, itemIndex, item)
         ---@cast item FuncType.SliderInt
         element = imgui.SliderInt(elementStrId, item.value, item.min, item.max, item.format or "%0.1f")
     end
+
+    -- if (imgui.IsItemHovered() and not item.notBindable and (item.type == FuncType.Button or item.type == FuncType.Toggle)) then
+    --     UI.Components.Hint("bindable-" .. elementStrId, "Для этой функции можно установить бинд в настройках")
+    -- end
 
     if (element) then
         call("onClick")

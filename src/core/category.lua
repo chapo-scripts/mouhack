@@ -21,10 +21,16 @@ function Category:AddPage(strId, name)
 end
 
 ---@class Categories
+---@field new fun(self: Categories, strId: string, name: string): Category
+---@field Find fun(self: Categories, name?: string, strId?: string)
 Categories = {
     list = {},
     labels = {}
 }
+
+function Categories:Find(name, strId)
+
+end
 
 function Categories:new(strId, name)
     local instance = {

@@ -1,55 +1,172 @@
 # Mou(jeek's)Hack
 
-## Building
-1. Install **[moonly-cli](https://github.com/themusaigen/moonly-command-tool)**
-2. Run `moonly.exe bundle`
+## Сборка проекта
+1. Установите **[moonly-cli](https://github.com/themusaigen/moonly-command-tool)**
+2. Соберите проект командой `moonly.exe bundle`
+
+## Модули
+Любой пользователь может дополнять функционал скрипта с помощью модулей, функционал API представлен ниже, больше примеров в `\example-modules`
+### Установка модулей
+Перенесите сторонний модуль в папку `moonloader\MouHack\modules` или установите публичный модуль в меню скрипта (Настройки -> Модули)
+
+### Разработка модулей
+#### Структура
+Модуль - папка, внутри которой находятся скрипты и `module.json` - файл, содержащий информацию о вашем модуле.
+**Публичный модуль** - модуль, находящийся внутри этого репозитория в директории `\modules`
+#### module.json
+```json
+{
+    "name": "module-name", // название модуля, не должно содержать пробелов или кириллицы
+    "author": "your-nickname", // ваш никнейм
+    "description": "Test module for MouHack", // описание модуля
+    "version": "0.0.1" // текущая версия модуля. Необходима для системы обновления публичных модулей.
+}
+```
+### Публикация модулей
+1. Создайте коммит и добавьте (папку или SubModule) с вашим модулем в `\modules`
+2. Создайте PullRequest
 
 ## API
-Вы можете с легкостью дополнять функционал чита путем создания "модулей".
-### Подготовка
-1. клонируйте репозиторий: `git clone https://github.com/chapo-scripts/mouhack`
-2. перейдите в папку и откройте ее в IDE: `cd mouhack && code .`
-### Создание модуля
-1. перейдите в папку `mouhack\src\modules`
-2. создайте папку c названием вашего модуля, например `test-module`
-3. создайте файл `init.lua` внутри созданной папки
-4. используйте ModuleCore API для создания модуля
+**Category**
+| Метод / Поле | Описание |
+|---|---|
+|`category.uid` | `number`, Индекс категории в `Categories.list` |
+|`category.strId` | `string`, Уникальный строковой ID |
+|`category.name` | `string`, Название категории |
+|`category.pages` | `Page[]`, Список страниц в категории |
+|`category.pagesLabels` | `string[]`, Список названий страниц в категории |
+|`Page page = category:AddPage(string strId, string name)`| Создает страницу в этой категории |
 
-## Примеры
-### `src\modules\test-module\init.lua`
-```lua
--- Создаем новую категорию
-local Category = ModuleCore.Category:new("Тестовый модуль")
+**Categories**
+| Метод / Поле | Описание |
+|---|---|
+|`Categories.list` | `Category[]`, Список всех категорий |
+|`Category category = Categories:new(string strId, string name)` | Создает категорию |
+|`Category? category = Categories:Find(string strId, string name)` | Ищет категорию по ее `strId` или `name` |
 
--- Добавляем страницу в нашу категорию из "modules.test-module.chat"
-Category:AddPage(require("modules.test-module.chat"))
-```
-### `src\modules\test-module\chat.lua`
-```lua
-local ffi, imgui = require("ffi"), require("mimgui")
+**Page**
 
--- Создаем новую страницу
-local Page = ModuleCore.Page:new("Чат")
+**FuncType**
+| Тип | Описание |
+|---|---|
+| `FuncType.Toggle` | Переключатель (ToggleButton) |
+| `FuncType.InputInt` | Поле ввода для чисел |
+| `FuncType.SliderFloat` | Слайдер числа с плавающей запятой |
+| `FuncType.Button` | Кнопка |
+| `FuncType.Combo` | Комбо-бокс |
+| `FuncType.Frame` | Кастомная функция для отрисовки |
+| `FuncType.Color` | Выбор цвета |
+| `FuncType.SliderInt` | Слайдер для числа |
+| `FuncType.Input` | Поле воода |
+| `FuncType.Checkbox` | Чекбокс |
+| `FuncType.TextArea` | Большое поле ввода. Отображается как обычное, но при клике открывает Popup с большим полем ввода |
+| `FuncType.Selector` | Селектор из нескольких значений |
+| `FuncType.NoAction` | Без виджета, отображается только название |
 
-Page.config.text = imgui.new.char[128]("")
-Page.config.color = imgui.new.float[3](1, 1, 1)
-Page.config.addToChat = imgui.new.bool(true)
-Page.config.addToConsole = imgui.new.bool(true)
+**Func**
+Поля функции зависят от ее типа, однако всегда содержат следующие:
+| Поле | Описание |
+|---|---|
+| `func.uid` | `number`, уникальный ID функции |
+| `func.type` | `FuncType`, тип функции |
+| `func.width` | `number?`, ширина виджета |
+| `func.height` | `number?`, высота виджета |
+| `func.noIndexInSearch` | `boolean?`, отключить отображение функции в поиске |
+| `func.notBindable` | `boolean?`, запретить устанавливать бинд на функцию |
+| `func.options` | `Func[]`, параметры функции |
+| `func.label` | `string`, название функции |
+| `func.description` | `string?`, описание функции |
+| `func.unsafe` | `(string\|boolean)?`, является ли функция безопасной для использования |
+| `func.isOption` | `boolean?`, является ли функция параметром (системное поле) |
+| `func.onChanged` | `function?`, коллбек, вызываемый при взаимодействием с виджетом функции |
+| `func.onFrame` | `function?`, коллбек, вызываемый после отрисовки виджета функции |
+| `func.parentPage` | `Page?`, родительская страница (равно `nil` если `isOption == true`) |
 
-local function onClick()
-    local text = ffi.string(Page.config.text)
-    if (Page.config.addToChat[0]) then
-        sampAddChatMessage(text, -1)
-    end
-    if (Page.config.addToConsole[0]) then
-        print(text)
-    end
-end
+Поля для различных типов функций:
+**Toggle**
+| Поле | Описание |
+|---|---|
+| `func.value` | `mimgui.bool` |
 
-Page:AddItem(PageItemType.Toggle, { value = Page.config.addToChat, label = "Добавлять сообщения в чат" })
-Page:AddItem(PageItemType.Toggle, { value = Page.config.addToConsole, label = "Добавлять сообщения в консоль" })
-Page:AddItem(PageItemType.Input, { value = Page.config.text, label = "Текст сообщения" })
-Page:AddItem(PageItemType.Button, { label = "Добавить сообщение", text = "Выполнить", onClick = onClick })
+**InputInt**
+| Поле | Описание |
+|---|---|
+| `func.flags` | `number?` |
+| `func.width` | `number?` |
+| `func.hint` | `string?` |
+| `func.value` | `mimgui.char` |
 
-return Page
-```
+**SliderFloat**
+| Поле | Описание |
+|---|---|
+| `func.max` | `number` |
+| `func.format` | `string?` |
+| `func.value` | `mimgui.float` |
+| `func.min` | `number` |
+| `func.width` | `number?` |
+
+**Button**
+| Поле | Описание |
+|---|---|
+| `func.size` | `ImVec2?` |
+| `func.text` | `string?` |
+
+**Combo**
+| Поле | Описание |
+|---|---|
+| `func.items` | `string[]` |
+| `func.width` | `number?` |
+| `func.value` | `mimgui.int` |
+
+**Frame**
+
+**Color**
+| Поле | Описание |
+|---|---|
+| `func.flags` | `number?` |
+| `func.value` | `mimgui.float[4]` |
+
+**SliderInt**
+| Поле | Описание |
+|---|---|
+| `func.max` | `number` |
+| `func.format` | `string?` |
+| `func.value` | `mimgui.float` |
+| `func.min` | `number` |
+| `func.width` | `number?` |
+
+**Input**
+| Поле | Описание |
+|---|---|
+| `func.flags` | `number?` |
+| `func.width` | `number?` |
+| `func.hint` | `string?` |
+| `func.value` | `mimgui.char` |
+
+**Checkbox**
+| Поле | Описание |
+|---|---|
+| `func.value` | `mimgui.bool` |
+
+**TextArea**
+| Поле | Описание |
+|---|---|
+| `func.width` | `number?` |
+| `func.hint` | `string?` |
+| `func.value` | `mimgui.char` |
+
+**Selector**
+| Поле | Описание |
+|---|---|
+| `func.items` | `string[]` |
+| `func.width` | `number?` |
+| `func.value` | `mimgui.int` |
+
+**NoAction**
+| Поле | Описание |
+|---|---|
+
+**Text**
+| Поле | Описание |
+|---|---|
+| `func.text` | `string` |

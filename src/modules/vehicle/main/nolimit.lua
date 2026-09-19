@@ -1,11 +1,11 @@
-local sampev = require('lib.samp.events')
+-- local sampev = require('lib.samp.events')
 return function(page)
     page.config.noLimit = imgui.new.bool(false)
-    sampev.onSetVehicleVelocity = function()
+    Events:on("onSetVehicleVelocity", function()
         if (page.config.noLimit[0]) then
             return false
         end
-    end
+    end)
     return Funcs:new(FuncType.Toggle, {
         label = "NoLimit",
         description = "Не позволяет серверу менять скорость вашего т/с",

@@ -9,11 +9,11 @@ end
 return function(page)
     page.config.antifreeze = imgui.new.bool(false)
     
-    require("samp.events").onTogglePlayerControllable = function(c)
+    Events:on("onTogglePlayerControllable", function(c)
         if (page.config.antifreeze[0] and not c) then
             return false
         end
-    end
+    end)
 
     return Funcs:new(FuncType.NoAction, {
         label = "Фриз",

@@ -33,7 +33,11 @@ function Style:ApplyDefaultStyle(style, colors, inversed)
     style.FrameRounding = 5
     style.PopupRounding = 15
     style.FramePadding = imgui.ImVec2(5, 5)
+    style.GrabRounding = 10
+    style.GrabMinSize = 10
 
+    colors[imgui.Col.SliderGrab] = UI.Colors.Color.Stroke.vec4
+    colors[imgui.Col.SliderGrabActive] = colors[imgui.Col.TextDisabled]
     colors[imgui.Col.Text] = imgui.ImVec4(1, 1, 1, 1)
     colors[imgui.Col.Border] = imgui.ImVec4(1, 0, 0, 0)
     colors[imgui.Col.ModalWindowDimBg] = imgui.ImVec4(0, 0, 0, 0.25)

@@ -1,4 +1,3 @@
-local ev = require("samp.events")
 local defaultSkillsLevel = {}
 
 local function setPlayerSKillLevel(skill, level)
@@ -12,14 +11,14 @@ end
 
 return function(page)
     page.config.maxSkills = imgui.new.bool(true)
-    ev.onSetPlayerSkillLevel = function(playerId, skill, level)
+    Events:on("onSetPlayerSkillLevel", function(playerId, skill, level)
         if (playerId == select(2, sampGetPlayerIdByCharHandle(PLAYER_PED))) then
             defaultSkillsLevel[skill] = level
             if (page.config.maxSkills[0]) then
                 return false
             end
         end
-    end
+    end)
 
     local function apply()
         for i = 0, 10 do

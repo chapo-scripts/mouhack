@@ -1,4 +1,3 @@
-local ev = require("samp.events")
 function SearchMarker()
     local ret_posX = 0.0
     local ret_posY = 0.0
@@ -28,11 +27,11 @@ return function(page)
         click = imgui.new.bool(false)
     }
 
-    ev.onSendMapMarker = function(position)
+    Events:on("onSendMapMarker", function(position)
         if (page.config.teleport.click[0]) then
             setCharCoordinates(PLAYER_PED, position.x, position.y, position.z)
         end
-    end
+    end)
 
 
     page:AddFunc(Funcs:new(FuncType.Toggle, {

@@ -1,22 +1,27 @@
-local ev = require("samp.events")
 ---@param page Page
 return function(page)
     page.config.logChat = { server = imgui.new.bool(false), outMsg = imgui.new.bool(true), outCmd = imgui.new.bool(true) }
-    ev.onServerMessage = function(color, text)
-        if (page.config.logChat.server[0]) then
-            print(("[CHAT] \"%s\" [color:\"%s\"]"):format(text, color))
-        end
-    end
-    ev.onSendChat = function(text)
-        if (page.config.logChat.outMsg[0]) then
-            print(("[CHAT] Sent message: \"%s\""):format(text))
-        end
-    end
-    ev.onSendCommand = function(cmd)
-        if (page.config.logChat.outCmd[0]) then
-            print(("[CHAT] Sent command: \"%s\""):format(cmd))
-        end
-    end
+    -- ev.onServerMessage = function(color, text)
+    --     if (page.config.logChat.server[0]) then
+    --         print(("[CHAT] \"%s\" [color:\"%s\"]"):format(text, color))
+    --     end
+    -- end
+    -- ev.onSendChat = function(text)
+    --     if (page.config.logChat.outMsg[0]) then
+    --         print(("[CHAT] Sent message: \"%s\""):format(text))
+    --     end
+    -- end
+    -- ev.onSendCommand = function(cmd)
+    --     if (page.config.logChat.outCmd[0]) then
+    --         print(("[CHAT] Sent command: \"%s\""):format(cmd))
+    --     end
+    -- end
+    Events:on("onServerMessage", function(e)
+        print("event call from chat->print:")
+        print(table.toString(e))
+        e:cancel()
+        e.set_result(false)
+    end)
 
     return Funcs:new(FuncType.NoAction, {
         label = "Выводить сообщения в консоль",

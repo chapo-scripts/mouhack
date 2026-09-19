@@ -63,6 +63,24 @@
 | `FuncType.Selector` | Селектор из нескольких значений |
 | `FuncType.NoAction` | Без виджета, отображается только название |
 
+**Funcs**
+| Тип | Описание |
+|---|---|
+| `Func func = Funcs:new(FuncType.Toggle,  FuncParams.Toggle options)` |  |
+| `Func func = Funcs:new(FuncType.InputInt,  FuncParams.InputInt options)` |  |
+| `Func func = Funcs:new(FuncType.SliderFloat,  FuncParams.SliderFloat options)` |  |
+| `Func func = Funcs:new(FuncType.Button,  FuncParams.Button options)` |  |
+| `Func func = Funcs:new(FuncType.Combo,  FuncParams.Combo options)` |  |
+| `Func func = Funcs:new(FuncType.Frame,  FuncParams.Frame options)` |  |
+| `Func func = Funcs:new(FuncType.Color,  FuncParams.Color options)` |  |
+| `Func func = Funcs:new(FuncType.SliderInt,  FuncParams.SliderInt options)` |  |
+| `Func func = Funcs:new(FuncType.Input,  FuncParams.Input options)` |  |
+| `Func func = Funcs:new(FuncType.Checkbox,  FuncParams.Checkbox options)` |  |
+| `Func func = Funcs:new(FuncType.TextArea,  FuncParams.TextArea options)` |  |
+| `Func func = Funcs:new(FuncType.Selector,  FuncParams.Selector options)` |  |
+| `Func func = Funcs:new(FuncType.NoAction,  FuncParams.NoAction options)` |  |
+| `Func func = Funcs:new(FuncType.Text,  FuncParams.Text options)` |  |
+
 **Func**
 Поля функции зависят от ее типа, однако всегда содержат следующие:
 | Поле | Описание |

@@ -2,11 +2,11 @@
 return function(page)
     page.config.nodrunk = imgui.new.bool(false)
     
-    require("samp.events").onSetPlayerDrunk = function()
+    Events:on("onSetPlayerDrunk", function()
         if (page.config.nodrunk[0]) then
             return false
         end
-    end
+    end)
 
     return Funcs:new(FuncType.Toggle, {
         label = "NoDrunk",

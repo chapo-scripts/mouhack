@@ -8,6 +8,13 @@ local Item = {
             updatedAt = 0,
             progress = 0
         }
+    },
+    hoverAnim = {
+        ["__example"] = {
+            hovered = false,
+            updatedAt = 0,
+            progress = 0
+        }
     }
 }
 
@@ -70,7 +77,6 @@ function Item:DrawItemControls(strId, itemIndex, item)
         end
         imgui.SetCursorPosX(winSize.x - paddingFromEnd - buttonSize.x)
         element = UI.Components.Button(buttonText, buttonSize)
-        
     elseif (item.type == FuncType.Text) then
         ---@cast item FuncType.Text
     elseif (item.type == FuncType.NoAction) then
@@ -217,7 +223,7 @@ function Item:DrawItemLabels(strId, item)
         imgui.TextDisabled(faicons("TRIANGLE_EXCLAMATION"))
         UI.Components.Hint("hint-unsafe-" .. strId, unsafeLabel)
     end
-    -- if (item.description) then
+    -- if (item.hint) then
     --     imgui.SameLine(nil, 10)
     --     imgui.TextDisabled(item.description)
     -- end

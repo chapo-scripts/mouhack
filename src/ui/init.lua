@@ -22,7 +22,9 @@ UI = {
         TextWithSearch = require("ui.components.text-with-search"),
         Scroller = require("ui.components.scroller"),
         HotkeyWithWarning = require("ui.components.hotkey-warning"),
+        LeftPanel = require("ui.components.left-panel"),
     },
+    Blur = select(2, pcall(require, "mimgui_blur")),
     Windows = {
         Main = require("ui.windows.main")
     },
@@ -34,6 +36,7 @@ UI = {
         Fonts = require("ui.resource.fonts"),
         Logo = require("ui.resource.logo")
     },
+    Notf = require("ui.notf"),
     Texture = {
         logo = nil
     },

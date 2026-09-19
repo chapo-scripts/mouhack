@@ -15,6 +15,23 @@ FuncType = {
     SliderInt = "SliderInt",
 }
 
+FUNC_TYPE_DATA = {
+    [FuncType.Toggle] = { value = "mimgui.bool" },
+    [FuncType.Button] = { text = "string?", size = "ImVec2?" },
+    [FuncType.Text] = { text = "string" },
+    [FuncType.NoAction] = {  },
+    [FuncType.Selector] = { value = "mimgui.int", items = "string[]", width = "number?" },
+    [FuncType.Combo] = { value = "mimgui.int", items = "string[]", width = "number?" },
+    [FuncType.Frame] = {  },
+    [FuncType.Input] = { value = "mimgui.char", hint = "string?", width = "number?", flags = "number?" },
+    [FuncType.InputInt] = { value = "mimgui.char", hint = "string?", width = "number?", flags = "number?" },
+    [FuncType.TextArea] = { value = "mimgui.char", hint = "string?", width = "number?" },
+    [FuncType.Checkbox] = { value = "mimgui.bool" },
+    [FuncType.Color] = { value = "mimgui.float[4]", flags = "number?" },
+    [FuncType.SliderFloat] = { value = "mimgui.float", min = "number", max = "number", format = "string?", width = "number?" },
+    [FuncType.SliderInt] = { value = "mimgui.float", min = "number", max = "number", format = "string?", width = "number?" },
+}
+
 ---@type Funcs
 Funcs = { ---@diagnostic disable-line
     list = {}

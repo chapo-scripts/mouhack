@@ -45,6 +45,3 @@
 ---@field channels fun(): string[] Get all channels
 ---@field get fun(name: string): EventBusChannel? Get channel by name
 ---@field clear_all fun() Delete all channels
-
----@type EventBus
-return require("eventbus.core")

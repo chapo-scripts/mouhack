@@ -1,21 +1,9 @@
-FUNC_TYPE_DATA = {
-    [FuncType.Toggle] = { value = "mimgui.bool" },
-    [FuncType.Button] = { text = "string?", size = "ImVec2?" },
-    [FuncType.Text] = { text = "string" },
-    [FuncType.NoAction] = {  },
-    [FuncType.Selector] = { value = "mimgui.int", items = "string[]", width = "number?" },
-    [FuncType.Combo] = { value = "mimgui.int", items = "string[]", width = "number?" },
-    [FuncType.Frame] = {  },
-    [FuncType.Input] = { value = "mimgui.char", hint = "string?", width = "number?", flags = "number?" },
-    [FuncType.InputInt] = { value = "mimgui.char", hint = "string?", width = "number?", flags = "number?" },
-    [FuncType.TextArea] = { value = "mimgui.char", hint = "string?", width = "number?" },
-    [FuncType.Checkbox] = { value = "mimgui.bool" },
-    [FuncType.Color] = { value = "mimgui.float[4]", flags = "number?" },
-    [FuncType.SliderFloat] = { value = "mimgui.float", min = "number", max = "number", format = "string?", width = "number?" },
-    [FuncType.SliderInt] = { value = "mimgui.float", min = "number", max = "number", format = "string?", width = "number?" },
+local FuncTypeGenerator = {
+    publicPath = PROJECT_PATH .. "\\api\\types\\funcs.lua",
+    path = PROJECT_PATH .. "\\src\\core\\types.lua"
 }
 
-local function generateFuncTypes()
+function FuncTypeGenerator:Generate()
     if (not DEVELOPMENT) then
         return
     end
@@ -64,10 +52,14 @@ local function generateFuncTypes()
     for typeKey, typeData in pairs(FUNC_TYPE_DATA) do
         table.insert(lines, ("---@field new fun(self: Funcs, type: \"%s\",  options: FuncType.%s): Func"):format(typeKey, typeKey))
     end
-    print(getWorkingDirectory() .. "\\src\\core\\types.lua")
-    local file = io.open(getWorkingDirectory() .. "\\src\\core\\types.lua", "w")
-    assert(file, "Error creating type file")
-    file:write(table.concat(lines, "\n"))
-    file:close()
+    
+    for _, path in ipairs({ self.publicPath, self.path }) do
+        local file = io.open(path, "w")
+        assert(file, "Error creating type file")
+        file:write(table.concat(lines, "\n"))
+        file:close()
+        print("[TOOLS] Func types written to:", path)
+    end
 end
-generateFuncTypes()
+
+return FuncTypeGenerator

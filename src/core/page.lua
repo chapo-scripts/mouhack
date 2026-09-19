@@ -6,6 +6,7 @@
 ---@field handlers table<string, function[]>
 ---@field config table<string, unknown>
 ---@field parentCategory? Page
+---@field frame? fun(page: Page, drawList: ImDrawList, pos: ImVec2, size: ImVec2)
 local Page = {}
 
 ---@overload fun(self: Page, func: fun(page: Page): Func)

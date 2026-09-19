@@ -1,15 +1,15 @@
-require("core.func")
-require("core.page")
-require("core.category")
-
 Core = {
     ---@type Listed[]
     list = {}
 }
-
-require("core.typegen")
+require("core.events"):Init()
+require("core.func")
+require("core.page")
+require("core.category")
 require("modules")
 require("core.binds")
+
+-- SampEvents.onServerMessage = function(c, t) print("SRVMSG", c, t) end
 
 -- Binds:Init()
 function Core:EmitAllPages(event, ...)

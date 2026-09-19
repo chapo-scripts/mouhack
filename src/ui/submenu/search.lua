@@ -179,7 +179,8 @@ end
 function Search:DrawResultsContainer(size)
     local oneResultSize = imgui.ImVec2(size.x, 10 + 15 + 5 + 20 + 10)
     imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(0, 0))
-    if (imgui.BeginChild("search-results-container-items", size, true, imgui.WindowFlags.NoScrollbar)) then
+    if (imgui.BeginChild("search-results-container-items", size, true, imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoScrollWithMouse)) then
+        UI.Components.Scroller("search-scroller", 150, 150)
         imgui.PushFont(UI.Font[15].Bold)
         local cDrawList = imgui.GetWindowDrawList()
         imgui.PushStyleVarVec2(imgui.StyleVar.ItemSpacing, imgui.ImVec2(0, 10))
@@ -188,6 +189,7 @@ function Search:DrawResultsContainer(size)
             UI.Components.CenterText("Ничего не найдено :(")
             imgui.PopFont()
         end
+        -- imgui.Dummy(imgui.ImVec2(oneResultSize.x, 25))
         for k, v in ipairs(Search.searchResults) do
             if (not self.resultsAnim.hover[k]) then
                 self.resultsAnim.hover[k] = { hovered = false, progress = 0, updatedAt = 0 }
@@ -264,7 +266,8 @@ function Search:Draw(windowPos, windowSize, bgDrawList)
         local containerPos = imgui.GetCursorScreenPos()
         self:DrawResultsContainer(containerSize)
         local darkenColor, darkenColorTransparent = imgui.GetColorU32(imgui.Col.PopupBg, 2), imgui.GetColorU32(imgui.Col.PopupBg, 0)
-        imgui.GetForegroundDrawList():AddRectFilledMultiColor(containerPos + imgui.ImVec2(0, containerSize.y - 50), containerPos + containerSize, darkenColorTransparent, darkenColorTransparent, darkenColor, darkenColor)
+        bgDrawList:AddRectFilledMultiColor(containerPos + imgui.ImVec2(0, containerSize.y - 50), containerPos + containerSize, darkenColorTransparent, darkenColorTransparent, darkenColor, darkenColor)
+        bgDrawList:AddRectFilledMultiColor(containerPos, containerPos + imgui.ImVec2(containerSize.x, 50), darkenColor, darkenColor, darkenColorTransparent, darkenColorTransparent)
         UI.Style:Pop(sCount)
         UI.Components.CenterText("Нажмите ESC для выхода",UI.Colors.withAlpha(UI.Colors.Color.Text.vec4, self.anim.progress - 0.5) )
         imgui.PopFont()

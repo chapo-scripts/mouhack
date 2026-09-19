@@ -109,12 +109,12 @@ for _, data in ipairs({
             {
                 strId = "pickups",
                 name = "Пикапы",
-                modules = { require("modules.devtools.pickups.take") }
+                modules = { require("modules.devtools.pickups.take"), require("modules.devtools.pickups.render") }
             },
             {
                 strId = "text3d",
                 name = "3D Тексты",
-                modules = {}
+                modules = { require("modules.devtools.labels.render") }
             },
             {
                 strId = "dialogs",
@@ -137,12 +137,28 @@ for _, data in ipairs({
                 modules = { require("modules.devtools.gametext.print"), require("modules.devtools.gametext.show") }
             }
         }
+    },
+     {
+        strId = "widgets",
+        name = "Виджеты",
+        pages = {
+            {
+                strId = "infobar",
+                name = "InfoBar",
+                frame = require("modules.widgets.infobar")
+            },
+            {
+                strId = "binds",
+                name = "Бинды",
+                frame = require("modules.widgets.binds")
+            }
+        }
     }
 }) do
     local category = Categories:new(data.strId, data.name)
     for _, pageData in ipairs(data.pages) do
-        local page = category:AddPage(pageData.strId, pageData.name)
-        for _, module in ipairs(pageData.modules) do
+        local page = category:AddPage(pageData.strId, pageData.name, pageData.frame)
+        for _, module in ipairs(pageData.modules or {}) do
             page:AddFunc(module)
         end
     end

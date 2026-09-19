@@ -1,8 +1,8 @@
-DocGen = {
-    PROJECT_PATH = select(1, debug.getinfo(1).source:match("@(.+)\\src\\init%.lua"))
+local FuncDocGenerator = {
+    path = PROJECT_PATH .. "\\api\\docs\\FUNCTIONS.md"
 }
 
-function DocGen:MakeFunctionsList()
+function FuncDocGenerator:Generate()
     print("Generating functions list...")
     local list = {}
 
@@ -28,7 +28,7 @@ function DocGen:MakeFunctionsList()
         end
     end        
     
-    local filePath = self.PROJECT_PATH .. "\\FUNCTIONS.md"
+    local filePath = self.path
     print("Functions reference was saved to:", filePath)
     local file, err = io.open(filePath, "w")
     assert(file, ("Unable to save FUNCTIONS.md as %s: %s"):format(filePath, err))
@@ -36,16 +36,4 @@ function DocGen:MakeFunctionsList()
     file:close()
 end
 
-function DocGen:MakeRequirementsList()
-    print("Generating requirements list...")
-    local reqs = {}
-    for k, v in pairs(package.loaded) do
-        if (not k:find("%.")) then
-            table.insert(reqs, k)
-        end
-    end
-    table.sort(reqs, function(a, b) return a < b end)
-    for k, v in ipairs(reqs) do
-        print(k, v)
-    end
-end
+return FuncDocGenerator

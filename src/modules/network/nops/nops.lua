@@ -1,6 +1,3 @@
-require("samp.events")
-local sampEventsCore = require("samp.events.core")
-
 local packetTypeInfo = {
     OUTCOMING_RPCS = { event = "onSendRpc", label = "RPC (Исходящие)" },
     OUTCOMING_PACKETS = { event = "onSendPacket", label = "Пакеты (Исходящие)" },
@@ -55,7 +52,7 @@ return function(page)
             page.config[packetType] = { state = imgui.new.bool(false), events = {} }
 
             local options = {}
-            for id, packetData in pairs(sampEventsCore.INTERFACE[packetType]) do
+            for id, packetData in pairs(SampEventsCore.INTERFACE[packetType]) do
                 local eventName = packetData[1]
                 if (type(eventName) == "string" and eventName:match("^on.+")) then
                     eventName = eventName:sub(3, #eventName)

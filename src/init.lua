@@ -1,5 +1,6 @@
 ---@diagnostic disable:lowercase-global
 DEVELOPMENT = MOONLY_BUNDLED == nil ---@diagnostic disable-line
+PROJECT_PATH = getWorkingDirectory()
 BASE_PATH = getGameDirectory() .. "\\moonloader"
 BUILT_AT = DEVELOPMENT and os.time() or MOONLY_BUNDLE_TIMESTAMP / 1000 ---@diagnostic disable-line
 
@@ -8,6 +9,9 @@ script_version(DEVELOPMENT and VERSION or "DEVELOPMENT") ---@diagnostic disable-
 script_author(DEVELOPMENT and AUTHOR or "DEV") ---@diagnostic disable-line
 
 require("libchecker")
+SampEvents = require("samp.events")
+SampEventsCore = require("samp.events.core")
+EventBus = require("eventbus")
 vkeys = require("vkeys")
 Memory = require("memory")
 ffi = require("ffi")
@@ -24,6 +28,12 @@ faicons = require("fAwesome6")
 require("moonloader")
 require("ui")
 
+if (DEVELOPMENT) then
+    require("tools.typegen.funcs"):Generate()
+    require("tools.typegen.events"):Generate()
+    require("tools.docgen.funcs"):Generate()
+end
+
 function main()
     while (not isSampAvailable()) do wait(0) end
     print("[MouHack] Config path:", CONFIG_PATH)
@@ -31,11 +41,11 @@ function main()
         MainWindowState[0] = not MainWindowState[0]
     end)
     if (DEVELOPMENT) then
-        require("tools.docgen")
-        sampRegisterChatCommand("mh.gendoc", function()
-            print("Generating docs...")
-            DocGen:MakeFunctionsList()
-            DocGen:MakeRequirementsList()
+        -- print("pacsage.loaded = ", table.toString(package.loaded))
+        sampRegisterChatCommand("log", function(arg)
+            a = TestChannel:emit("log", arg)
+            print("TestChannel list", table.toString(a))
+            print(table.toString(TestChannel:list()))
         end)
     end
 
@@ -45,5 +55,12 @@ function main()
         wait(0)
         UI.Blink:Update()
         Core:EmitAllPages("loop")
+        if (wasKeyPressed(VK_G)) then
+            UI.Notf:Push("Hello world", 5, "wc")
+        end
     end
 end
+-- SampEvents = require("samp.events")
+-- SampEvents.onServerMessage = function(c, t)
+--     sampAddChatMessage("SE: {ffffff}" .. t, 0xFFff0000)
+-- end

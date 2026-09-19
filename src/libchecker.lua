@@ -11,7 +11,7 @@ ffi.cdef [[
 local modules = {
     { name = "mimgui",           path = "mimgui",         url = "https://www.blast.hk/threads/66959/" },
     { name = "Carb JSON Config", path = "carbJsonConfig", url = "https://www.blast.hk/threads/214849/" },
-    { name = "SAMP.lua", path = "samp.events", url = "https://www.blast.hk/threads/14624/" },
+    -- { name = "SAMP.lua", path = "samp.events", url = "https://www.blast.hk/threads/14624/" },
     { name = "Effil", path = "effil", url = "https://blast.hk/attachments/19493" },
     { name = "Requests", path = "requests", url = "https://github.com/Xkelling/blasthack/raw/main/requests.rar" }
 }

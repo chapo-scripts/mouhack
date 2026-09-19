@@ -12,9 +12,10 @@ function Category:Print(...)
 end
 
 ---@return Page
-function Category:AddPage(strId, name)
+function Category:AddPage(strId, name, frameFunc)
     local page = Pages:new(strId, name, self)
     page.parentCategory = self
+    page.frame = frameFunc and frameFunc(page) or nil
     table.insert(self.pages, page)
     table.insert(self.pagesLabels, name)
     return page

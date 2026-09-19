@@ -11,6 +11,16 @@ function table.includes(table, value)
     return false
 end
 
+---@param t table
+---@return table t
+function table.copy(t)
+    local result = {}
+    for k, v in pairs(t) do
+        result[k] = v
+    end
+    return result
+end
+
 ---@param table table
 ---@param func fun(t: table): boolean
 ---@return number?

@@ -132,6 +132,10 @@ function Item:DrawItemControls(strId, itemIndex, item)
     if (element) then
         call("onClick")
         call("onChange")
+        -- if (not item.dontSaveOnChange) then
+            print("Config SAVE!")
+            Config()
+        -- end
     end
     --[[
     if (item.type == FuncType.Toggle) then

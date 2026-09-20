@@ -69,7 +69,7 @@ return function(page, dl, pos, size)
         "newline", "icon:SIGNAL", "spacing:5", "data:ping", "spacing:15", "icon:IMAGES", "spacing:5", "data:fps"
     }
     imgui.OnFrame(
-        function() return page and page.config.infobar[0] end,
+        function() return page and page.config.infobar[0] and isSampAvailable() end,
         function(frame)
             frame.HideCursor = true
             imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(10 * page.config.infobarScale[0], 10 * page.config.infobarScale[0]))

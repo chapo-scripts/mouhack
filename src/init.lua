@@ -21,8 +21,8 @@ Encoding.default = "CP1251"
 u8 = Encoding.UTF8
 CarbJsonConfig = require("carbJsonConfig")
 require("utils")
-require("config")
 require("core")
+require("config")
 imgui = require("mimgui")
 faicons = require("fAwesome6")
 require("moonloader")
@@ -35,6 +35,7 @@ if (DEVELOPMENT) then
 end
 
 function main()
+    LoadConfig()
     while (not isSampAvailable()) do wait(0) end
     print("[MouHack] Config path:", CONFIG_PATH)
     sampRegisterChatCommand("mh", function()

@@ -94,4 +94,4 @@ function Core:ListLoadedFuncs()
 end
 
 Core:ListLoadedFuncs()
-Binds:Init()
+-- Binds:Init()

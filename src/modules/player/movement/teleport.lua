@@ -21,11 +21,9 @@ end
 
 ---@param page Page
 return function(page)
-    page.config.teleport = {
-        destination = imgui.new.int(0),
-        coords = { imgui.new.float(1), imgui.new.float(1), imgui.new.float(1) },
-        click = imgui.new.bool(false)
-    }
+    page.config.destination = imgui.new.int(0)
+        -- coords = { imgui.new.float(1), imgui.new.float(1), imgui.new.float(1)
+    page.config.click = imgui.new.bool(false)
 
     Events:on("onSendMapMarker", function(position)
         if (page.config.teleport.click[0]) then
@@ -35,7 +33,7 @@ return function(page)
 
 
     page:AddFunc(Funcs:new(FuncType.Toggle, {
-        value = page.config.teleport.click,
+        value = page.config.click,
         label = "Телепорт по карте",
         description = "Телепорт на метку по клику (ESC->Карта)",
         unsafe = Const.UNSAFE_ITEM_LABEL_GRANTED_KICK,
@@ -44,7 +42,7 @@ return function(page)
         label = "Телепорт",
         text = "Телепортироваться",
         onClick = function()
-            local fn = page.config.teleport.destination[0] == 0 and getTargetBlipCoordinates or SearchMarker
+            local fn = page.config.destination[0] == 0 and getTargetBlipCoordinates or SearchMarker
             local result, x, y, z = fn()
             if (result) then
                 setCharCoordinates(PLAYER_PED, x, y, z)
@@ -56,7 +54,7 @@ return function(page)
         options = {
             Funcs:new(FuncType.Combo, {
                 label = "Точка назначения",
-                value = page.config.teleport.destination,
+                value = page.config.destination,
                 items = {"Метка", "Чекпоинт"},
                 isOption = true
             })

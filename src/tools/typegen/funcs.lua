@@ -28,6 +28,7 @@ function FuncTypeGenerator:Generate()
 ---@field width? number
 ---@field height? number
 ---@field noIndexInSearch? boolean
+---@field dontSaveOnChange? boolean
 ---@field notBindable? boolean
 ---@field options? Func[]
 ---@field tags? {icon: string, text: string}[]

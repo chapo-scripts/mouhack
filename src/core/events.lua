@@ -10,7 +10,7 @@ function EventsCore:Init()
     for _, packetType in ipairs({ "OUTCOMING_RPCS", "OUTCOMING_PACKETS", "INCOMING_RPCS", "INCOMING_PACKETS" }) do
         print("Registering type", packetType)
         for _, packetData in pairs(SampEvents.INTERFACE[packetType]) do
-            print("setup eventbus for", packetData[1])
+            -- print("setup eventbus for", packetData[1])
             local eventName = packetData[1]
             SampEvents[eventName] = function(...)
                 local namedArgs, argsArray = {}, { ... }
@@ -23,7 +23,7 @@ function EventsCore:Init()
                     end
                 end
                 local result = Events:emit(eventName, namedArgs)
-                print("EVENT RESULT", table.toString(result))
+                -- print("EVENT RESULT", table.toString(result))
             end
         end
     end

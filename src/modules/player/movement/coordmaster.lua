@@ -90,7 +90,7 @@ return function(page)
             }),
             Funcs:new(FuncType.Combo, {
                 label = "Точка назначения",
-                value = page.config.teleport.destination,
+                value = page.config.cmDest,
                 items = {"Метка", "Чекпоинт"},
                 isOption = true
             }),

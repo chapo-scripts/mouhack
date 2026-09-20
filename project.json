@@ -11,7 +11,7 @@
       "MOONLY_BUNDLE_TIMESTAMP": "<$date>"
     },
     "exclude": [],
-    "include": [],
+    "include": ["lib/*.lua"],
     "output": "dist"
   }
 }

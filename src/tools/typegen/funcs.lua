@@ -20,26 +20,30 @@ function FuncTypeGenerator:Generate()
     end
     
     -- Types
-    table.insert(lines, [[
+    table.insert(lines, "\n\n---@class FuncBase")
+    for _, field in ipairs(FUNC_BASE_TYPE_DATA) do
+        table.insert(lines, ("---@field %s %s"):format(field.field, field.type))
+    end
+--     table.insert(lines, [[
 
----@class FuncBase
----@field uid? number
----@field type? Func
----@field width? number
----@field height? number
----@field noIndexInSearch? boolean
----@field dontSaveOnChange? boolean
----@field notBindable? boolean
----@field options? Func[]
----@field tags? {icon: string, text: string}[]
----@field label string
----@field description? string
----@field unsafe? string | boolean
----@field isOption? boolean
----@field onChanged? fun()
----@field onFrame? fun()
----@field parentPage? Page
-    ]])
+-- ---@class FuncBase
+-- ---@field uid? number
+-- ---@field type? Func
+-- ---@field width? number
+-- ---@field height? number
+-- ---@field noIndexInSearch? boolean
+-- ---@field dontSaveOnChange? boolean
+-- ---@field notBindable? boolean
+-- ---@field options? Func[]
+-- ---@field tags? {icon: string, text: string}[]
+-- ---@field label string
+-- ---@field description? string
+-- ---@field unsafe? string | boolean
+-- ---@field isOption? boolean
+-- ---@field onChanged? fun()
+-- ---@field onFrame? fun()
+-- ---@field parentPage? Page
+--     ]])
     
     for typeKey, typeData in pairs(FUNC_TYPE_DATA) do
         table.insert(lines, ("\n---@class FuncType.%s : FuncBase"):format(typeKey))

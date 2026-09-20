@@ -32,6 +32,25 @@ FUNC_TYPE_DATA = {
     [FuncType.SliderInt] = { value = "mimgui.float", min = "number", max = "number", format = "string?", width = "number?" },
 }
 
+FUNC_BASE_TYPE_DATA = {
+    { field = "uid", type = "number?" },
+    { field = "type", type = "Func?" },
+    { field = "width", type = "number?" },
+    { field = "height", type = "number?" },
+    { field = "noIndexInSearch?", type = "boolean" },
+    { field = "dontSaveOnChange?", type = "boolean" },
+    { field = "notBindable", type = "boolean?" },
+    { field = "options", type = "Func[]?" },
+    { field = "tags", type = "{icon: string, text: string}[]?" },
+    { field = "label", type = "string" },
+    { field = "description", type = "string?" },
+    { field = "unsafe", type = "(string | boolean)?" },
+    { field = "isOption", type = "boolean?" },
+    { field = "onChanged", type = "fun()?" },
+    { field = "onFrame", type = "fun()?" },
+    { field = "parentPage", type = "Page?" },
+}
+
 ---@type Funcs
 Funcs = { ---@diagnostic disable-line
     list = {}
